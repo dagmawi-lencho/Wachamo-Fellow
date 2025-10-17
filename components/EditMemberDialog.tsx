@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertCircle, Save, User, GraduationCap, Users, Heart } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { colleges, getDepartmentsByCollege } from '@/lib/academicData';
+import { fellowshipTeams } from '@/lib/fellowshipTeams';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import type { Member } from '@/types/member';
 
@@ -238,10 +239,18 @@ export function EditMemberDialog({ member, open, onOpenChange, onSave }: EditMem
               </div>
               <div className="space-y-2">
                 <Label>Fellowship Team *</Label>
-                <Input
-                  value={formData.fellowshipTeam || ''}
-                  onChange={(e) => updateField('fellowshipTeam', e.target.value)}
-                />
+                <Select value={formData.fellowshipTeam} onValueChange={(val) => updateField('fellowshipTeam', val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fellowshipTeams.map((team) => (
+                      <SelectItem key={team} value={team}>
+                        {team}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>Leadership Role</Label>

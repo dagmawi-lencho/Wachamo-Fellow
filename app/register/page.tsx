@@ -226,9 +226,38 @@ export default function RegisterPage() {
                 Welcome to the Wachamo Fellowship family! May God bless your journey with us.
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-6">
               <p className="text-sm text-muted-foreground italic">
                 &ldquo;I can do all things through Christ who strengthens me.&rdquo; - Philippians 4:13
+              </p>
+
+              {/* Telegram Channel Invitation */}
+              <div className="bg-gradient-to-r from-blue-50/80 to-primary/10 backdrop-blur-xl rounded-2xl p-6 border border-primary/20">
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                  </svg>
+                  <h3 className="text-lg font-bold text-gray-800">Join Our Community!</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Stay connected with the WCU Fellowship family on Telegram for updates, prayers, and fellowship activities.
+                </p>
+                <Button
+                  onClick={() => window.open('https://t.me/WcuEvaSU', '_blank')}
+                  className="w-full h-14 text-lg font-bold gradient-secondary text-white hover:scale-105 transition-transform"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                  </svg>
+                  Join WCU Fellowship Telegram
+                </Button>
+                <p className="text-xs text-gray-500 mt-3">
+                  4,963 members already connected
+                </p>
+              </div>
+
+              <p className="text-xs text-gray-500">
+                Redirecting to home in a moment...
               </p>
             </CardContent>
           </Card>
@@ -515,12 +544,30 @@ export default function RegisterPage() {
 
                     <div className="space-y-3">
                       <Label htmlFor="fellowshipTeam" className="text-base font-bold text-gray-800">Fellowship Team *</Label>
-                      <Input
-                        id="fellowshipTeam"
-                        placeholder="e.g., Worship Team, Evangelism Team"
-                        value={formData.fellowshipTeam}
-                        onChange={(e) => updateFormData('fellowshipTeam', e.target.value)}
-                      />
+                      <Select 
+                        value={formData.fellowshipTeam} 
+                        onValueChange={(val) => updateFormData('fellowshipTeam', val)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your fellowship team" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="BSC">BSC</SelectItem>
+                          <SelectItem value="Discipleship">Discipleship</SelectItem>
+                          <SelectItem value="Counseling">Counseling</SelectItem>
+                          <SelectItem value="Kadosh">Kadosh</SelectItem>
+                          <SelectItem value="Tushia">Tushia</SelectItem>
+                          <SelectItem value="Evange mobilizers">Evange mobilizers</SelectItem>
+                          <SelectItem value="Pray mobilizers">Pray mobilizers</SelectItem>
+                          <SelectItem value="Love sharing">Love sharing</SelectItem>
+                          <SelectItem value="Media">Media</SelectItem>
+                          <SelectItem value="Medicine team">Medicine team</SelectItem>
+                          <SelectItem value="Health team">Health team</SelectItem>
+                          <SelectItem value="Sisters ministry">Sisters ministry</SelectItem>
+                          <SelectItem value="Natanims">Natanims</SelectItem>
+                          <SelectItem value="Fundraising team">Fundraising team</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-3">

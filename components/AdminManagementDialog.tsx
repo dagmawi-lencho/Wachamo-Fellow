@@ -99,7 +99,7 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
       } else {
         setError(data.error || 'Failed to create admin');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred while creating admin');
     } finally {
       setIsLoading(false);
@@ -125,7 +125,7 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
       } else {
         setError(data.error || 'Failed to delete admin');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred while deleting admin');
     }
   };

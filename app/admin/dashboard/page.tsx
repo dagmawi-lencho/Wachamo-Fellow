@@ -8,7 +8,8 @@ import {
   LogOut, Settings, Search,
   Edit, Trash2, Shield,
   Cross, Heart, GraduationCap,
-  BarChart3, PieChart, Activity
+  BarChart3, PieChart, Activity,
+  Download, Filter, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +34,8 @@ import {
 import { EditMemberDialog } from '@/components/EditMemberDialog';
 import { AdminManagementDialog } from '@/components/AdminManagementDialog';
 import { Label } from '@/components/ui/label';
+import { colleges } from '@/lib/academicData';
+import { fellowshipTeams } from '@/lib/fellowshipTeams';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   BarChart, Bar, PieChart as RePieChart, Pie, Cell, 
@@ -84,6 +87,17 @@ export default function AdminDashboard() {
   });
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);
   const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    fellowshipTeam: '',
+    college: '',
+    department: '',
+    membershipStatus: '',
+    sex: '',
+    bornAgain: '',
+    attendingBibleStudy: '',
+    academicYear: ''
+  });
 
   useEffect(() => {
     checkAuth();
@@ -191,11 +205,82 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredMembers = (members || []).filter(member =>
-    member.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.department?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMembers = (members || []).filter(member => {
+    // Search filter
+    const matchesSearch = 
+      member.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.college?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (!matchesSearch) return false;
+
+    // Apply all filters
+    if (filters.fellowshipTeam && member.fellowshipTeam !== filters.fellowshipTeam) return false;
+    if (filters.college && member.college !== filters.college) return false;
+    if (filters.department && member.department !== filters.department) return false;
+    if (filters.membershipStatus && member.membershipStatus !== filters.membershipStatus) return false;
+    if (filters.sex && member.sex !== filters.sex) return false;
+    if (filters.bornAgain && member.bornAgain !== filters.bornAgain) return false;
+    if (filters.attendingBibleStudy && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
+    if (filters.academicYear && member.academicYear !== filters.academicYear) return false;
+
+    return true;
+  });
+
+  const clearFilters = () => {
+    setFilters({
+      fellowshipTeam: '',
+      college: '',
+      department: '',
+      membershipStatus: '',
+      sex: '',
+      bornAgain: '',
+      attendingBibleStudy: '',
+      academicYear: ''
+    });
+  };
+
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
+
+  const exportToExcel = () => {
+    // Dynamic import to avoid build issues
+    import('xlsx').then((XLSX) => {
+      const worksheet = XLSX.utils.json_to_sheet(
+        filteredMembers.map(member => ({
+          'Full Name': member.fullName,
+          'Sex': member.sex,
+          'Age': member.age,
+          'Phone Number': member.phoneNumber,
+          'Student ID': member.studentId,
+          'College': member.college,
+          'Department': member.department,
+          'Section': member.section,
+          'Academic Year': member.academicYear,
+          'Membership Status': member.membershipStatus,
+          'Fellowship Team': member.fellowshipTeam,
+          'Leadership Role': member.leadershipRole || '',
+          'Bible Study': member.attendingBibleStudy,
+          'Bible Study Role': member.bibleStudyRole || '',
+          'Born Again': member.bornAgain,
+          'Church Name': member.churchName,
+          'Spiritual Gift': member.spiritualGift,
+          'Favorite Bible Verse': member.favoriteBibleVerse,
+          'Prayer Request': member.prayerRequest || '',
+          'Registered Date': new Date(member.createdAt).toLocaleDateString()
+        }))
+      );
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Members');
+
+      // Generate filename with date
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `Wachamo_Fellowship_Members_${date}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
+    });
+  };
 
   if (isLoading) {
     return (
@@ -426,22 +511,233 @@ export default function AdminDashboard() {
           <TabsContent value="members" className="space-y-6">
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Registered Members</CardTitle>
-                    <CardDescription>Manage all fellowship members</CardDescription>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search members..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 w-64"
-                      />
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Registered Members</CardTitle>
+                      <CardDescription>
+                        Manage all fellowship members • {filteredMembers.length} of {members.length} shown
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`border-2 ${hasActiveFilters ? 'border-primary bg-primary/10' : ''}`}
+                      >
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filters {hasActiveFilters && `(${Object.values(filters).filter(v => v).length})`}
+                      </Button>
+                      <Button
+                        onClick={exportToExcel}
+                        className="gradient-secondary text-white"
+                        disabled={filteredMembers.length === 0}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Export to Excel
+                      </Button>
                     </div>
                   </div>
+
+                  {/* Search Bar */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by name, student ID, department, or college..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Filter Panel */}
+                  {showFilters && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-xl rounded-2xl p-6 border border-primary/20"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold flex items-center gap-2">
+                          <Filter className="w-5 h-5 text-primary" />
+                          Advanced Filters
+                        </h3>
+                        {hasActiveFilters && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={clearFilters}
+                            className="text-primary hover:text-primary/80"
+                          >
+                            <X className="w-4 h-4 mr-1" />
+                            Clear All
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Fellowship Team Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Fellowship Team</Label>
+                          <Select
+                            value={filters.fellowshipTeam}
+                            onValueChange={(val) => setFilters({ ...filters, fellowshipTeam: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All teams" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Teams</SelectItem>
+                              {fellowshipTeams.map((team) => (
+                                <SelectItem key={team} value={team}>
+                                  {team}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* College Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">College</Label>
+                          <Select
+                            value={filters.college}
+                            onValueChange={(val) => setFilters({ ...filters, college: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All colleges" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Colleges</SelectItem>
+                              {colleges.map((college) => (
+                                <SelectItem key={college} value={college}>
+                                  {college}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Membership Status Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Membership Status</Label>
+                          <Select
+                            value={filters.membershipStatus}
+                            onValueChange={(val) => setFilters({ ...filters, membershipStatus: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All statuses" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Statuses</SelectItem>
+                              <SelectItem value="New Member">New Member</SelectItem>
+                              <SelectItem value="Existing Member">Existing Member</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Sex Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Sex</Label>
+                          <Select
+                            value={filters.sex}
+                            onValueChange={(val) => setFilters({ ...filters, sex: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="Male">Male</SelectItem>
+                              <SelectItem value="Female">Female</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Academic Year Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Academic Year</Label>
+                          <Select
+                            value={filters.academicYear}
+                            onValueChange={(val) => setFilters({ ...filters, academicYear: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All years" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All Years</SelectItem>
+                              <SelectItem value="1st Year">1st Year</SelectItem>
+                              <SelectItem value="2nd Year">2nd Year</SelectItem>
+                              <SelectItem value="3rd Year">3rd Year</SelectItem>
+                              <SelectItem value="4th Year">4th Year</SelectItem>
+                              <SelectItem value="5th Year">5th Year</SelectItem>
+                              <SelectItem value="6th Year">6th Year</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Born Again Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Born Again</Label>
+                          <Select
+                            value={filters.bornAgain}
+                            onValueChange={(val) => setFilters({ ...filters, bornAgain: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="Yes">Yes</SelectItem>
+                              <SelectItem value="No">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Bible Study Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Bible Study</Label>
+                          <Select
+                            value={filters.attendingBibleStudy}
+                            onValueChange={(val) => setFilters({ ...filters, attendingBibleStudy: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="Yes">Attending</SelectItem>
+                              <SelectItem value="No">Not Attending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Active Filters Summary */}
+                      {hasActiveFilters && (
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {Object.entries(filters).map(([key, value]) => {
+                            if (!value) return null;
+                            return (
+                              <Badge
+                                key={key}
+                                className="gradient-primary text-white pr-1"
+                              >
+                                {value}
+                                <button
+                                  onClick={() => setFilters({ ...filters, [key]: '' })}
+                                  className="ml-2 hover:bg-white/20 rounded-full p-0.5"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>

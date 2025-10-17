@@ -1031,7 +1031,7 @@ export default function AdminDashboard() {
             <div className="space-y-2">
               <Label>Registration Status</Label>
               <Select
-                value={registrationSettings.isOpen.toString()}
+                value={registrationSettings.isOpen !== undefined ? registrationSettings.isOpen.toString() : 'true'}
                 onValueChange={(val) =>
                   setRegistrationSettings({ ...registrationSettings, isOpen: val === 'true' })
                 }

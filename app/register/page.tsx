@@ -76,8 +76,15 @@ export default function RegisterPage() {
     // Check if registration is open
     fetch('/api/registration-status')
       .then(res => res.json())
-      .then(data => setRegistrationOpen(data.isOpen))
-      .catch(console.error);
+      .then(data => {
+        // Default to true if isOpen is undefined
+        setRegistrationOpen(data.isOpen !== false);
+      })
+      .catch(err => {
+        console.error('Registration status check failed:', err);
+        // Default to open if API fails
+        setRegistrationOpen(true);
+      });
   }, []);
 
   const validateStep = (step: number): boolean => {

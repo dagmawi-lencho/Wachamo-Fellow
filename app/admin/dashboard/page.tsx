@@ -191,10 +191,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredMembers = members.filter(member =>
-    member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.department.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMembers = (members || []).filter(member =>
+    member.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {

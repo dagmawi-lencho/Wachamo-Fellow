@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+Feautres for the admin side page:
+- should able see the total registered fellowship members with and without category
+- the admin should have the access to start and end the registration. include a time selection for begining and end date
+- there should be graphs and visualizations based on the data
+- the admin should have a CRUD access

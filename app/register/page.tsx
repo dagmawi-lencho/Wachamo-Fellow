@@ -161,7 +161,6 @@ export default function RegisterPage() {
       
       if (response.ok) {
         setSuccess(true);
-        setTimeout(() => router.push('/'), 3000);
       } else {
         setError(data.error || 'Registration failed. Please try again.');
       }
@@ -263,9 +262,14 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <p className="text-xs text-gray-500">
-                Redirecting to home in a moment...
-              </p>
+              {/* Back to Home Button */}
+              <Button
+                onClick={() => router.push('/')}
+                variant="outline"
+                className="w-full border-2 border-primary/30 hover:bg-primary/10"
+              >
+                Back to Home
+              </Button>
             </CardContent>
           </Card>
         </motion.div>

@@ -516,7 +516,7 @@ export default function AdminDashboard() {
                     <div>
                       <CardTitle>Registered Members</CardTitle>
                       <CardDescription>
-                        Manage all fellowship members • {filteredMembers.length} of {members.length} shown
+                        Manage all fellowship members • {filteredMembers.length} of {members?.length || 0} shown
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-3">

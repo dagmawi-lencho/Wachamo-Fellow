@@ -382,7 +382,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-primary">
-                      {stats?.overview.totalMembers || 0}
+                      {stats?.overview?.totalMembers || 0}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       All registered members
@@ -403,7 +403,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-secondary">
-                      {stats?.overview.newMembers || 0}
+                      {stats?.overview?.newMembers || 0}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Recently joined
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-green-500">
-                      {stats?.overview.attendingBibleStudy || 0}
+                      {stats?.overview?.attendingBibleStudy || 0}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Attending classes
@@ -445,7 +445,7 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-purple-500">
-                      {stats?.overview.bornAgainYes || 0}
+                      {stats?.overview?.bornAgainYes || 0}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Believers
@@ -467,19 +467,19 @@ export default function AdminDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-primary">{stats?.overview.newMembers || 0}</p>
+                      <p className="text-2xl font-bold text-primary">{stats?.overview?.newMembers || 0}</p>
                       <p className="text-sm text-muted-foreground">New</p>
                     </div>
                     <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <p className="text-2xl font-bold text-secondary">{stats?.overview.existingMembers || 0}</p>
+                      <p className="text-2xl font-bold text-secondary">{stats?.overview?.existingMembers || 0}</p>
                       <p className="text-sm text-muted-foreground">Existing</p>
                     </div>
                     <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-blue-600">{stats?.overview.maleMembers || 0}</p>
+                      <p className="text-2xl font-bold text-blue-600">{stats?.overview?.maleMembers || 0}</p>
                       <p className="text-sm text-muted-foreground">Male</p>
                     </div>
                     <div className="text-center p-4 bg-pink-50 rounded-lg">
-                      <p className="text-2xl font-bold text-pink-600">{stats?.overview.femaleMembers || 0}</p>
+                      <p className="text-2xl font-bold text-pink-600">{stats?.overview?.femaleMembers || 0}</p>
                       <p className="text-sm text-muted-foreground">Female</p>
                     </div>
                   </div>
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {stats?.charts.membersByDepartment.slice(0, 5).map((dept) => (
+                    {stats?.charts?.membersByDepartment.slice(0, 5).map((dept) => (
                       <div key={dept._id} className="flex items-center justify-between">
                         <span className="text-sm font-medium">{dept._id}</span>
                         <Badge className="gradient-primary text-white">{dept.count}</Badge>
@@ -830,7 +830,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={stats?.charts.membersByCollege || []}>
+                    <BarChart data={stats?.charts?.membersByCollege || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="_id" angle={-45} textAnchor="end" height={100} fontSize={12} />
                       <YAxis />
@@ -851,7 +851,7 @@ export default function AdminDashboard() {
                   <ResponsiveContainer width="100%" height={300}>
                     <RePieChart>
                       <Pie
-                        data={stats?.charts.membersByYear || []}
+                        data={stats?.charts?.membersByYear || []}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -860,7 +860,7 @@ export default function AdminDashboard() {
                         fill="#8884d8"
                         dataKey="count"
                       >
-                        {stats?.charts.membersByYear.map((entry, idx) => (
+                        {stats?.charts?.membersByYear.map((entry, idx) => (
                           <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
                         ))}
                       </Pie>
@@ -878,7 +878,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={stats?.charts.recentRegistrations || []}>
+                    <LineChart data={stats?.charts?.recentRegistrations || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="_id" />
                       <YAxis />
@@ -904,7 +904,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={stats?.charts.fellowshipTeams || []}>
+                    <BarChart data={stats?.charts?.fellowshipTeams || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="_id" angle={-45} textAnchor="end" height={100} fontSize={12} />
                       <YAxis />

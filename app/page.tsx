@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Cross, BookOpen, Users, Heart, ArrowRight } from 'lucide-react';
+import { Cross, BookOpen, Users, Heart, ArrowRight, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -99,22 +99,33 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
                 </span>
               </Button>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/shop')}
-                  className="border-2 hover:bg-primary/10"
-                >
-                  Visit Shop
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => router.push('/donate')}
-                  className="border-2 hover:bg-primary/10"
-                >
-                  Donate
-                </Button>
-              </div>
+              {/* Shop & Donate Buttons */}
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto"
+              >
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={() => router.push('/shop')}
+                    className="w-full h-16 text-lg font-bold bg-white/90 backdrop-blur-xl border-2 border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-white shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                    Visit Shop
+                  </Button>
+                </motion.div>
+                
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={() => router.push('/donate')}
+                    className="w-full h-16 text-lg font-bold gradient-secondary text-white border-4 border-white shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                  >
+                    <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform animate-pulse" />
+                    Donate Now
+                  </Button>
+                </motion.div>
+              </motion.div>
             </motion.div>
 
             {/* Feature Cards */}

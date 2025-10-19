@@ -82,7 +82,7 @@ export function DonateForm() {
               required
             />
             <p className="text-xs text-gray-500">
-              You'll receive USSD prompt on your phone (CBE Birr, Telebirr, etc.)
+              You&apos;ll receive USSD prompt on your phone (CBE Birr, Telebirr, etc.)
             </p>
           </div>
 

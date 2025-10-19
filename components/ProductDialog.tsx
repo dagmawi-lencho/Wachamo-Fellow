@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Package } from 'lucide-react';
 
 type Product = {
   _id?: string;
@@ -63,12 +64,15 @@ export default function ProductDialog({ open, onOpenChange, product, onSaved }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
-          <DialogTitle>{product ? 'Edit Product' : 'New Product'}</DialogTitle>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 -mx-6 -mt-6 px-6 py-4 mb-4 rounded-t-2xl">
+          <DialogTitle className="text-2xl flex items-center gap-2">
+            <Package className="w-6 h-6 text-primary" />
+            {product ? 'Edit Product' : 'Create New Product'}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-2">
+        <div className="grid gap-5 py-2">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g., Bible (Amharic)" />
@@ -107,10 +111,21 @@ export default function ProductDialog({ open, onOpenChange, product, onSaved }: 
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button className="gradient-primary text-white" onClick={save} disabled={saving}>
-              {saving ? 'Saving...' : 'Save'}
+          <div className="flex justify-end gap-3 pt-4 border-t">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="px-6">
+              Cancel
+            </Button>
+            <Button className="gradient-primary text-white px-8 h-12 shadow-lg" onClick={save} disabled={saving}>
+              {saving ? (
+                <>
+                  <span className="animate-pulse">Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Package className="w-4 h-4 mr-2" />
+                  {product ? 'Update Product' : 'Create Product'}
+                </>
+              )}
             </Button>
           </div>
         </div>

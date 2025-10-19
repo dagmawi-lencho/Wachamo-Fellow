@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, Heart, Package, ArrowLeft, Tag } from 'lucide-react';
+import { ShoppingCart, Heart, Package, ArrowLeft, Tag, Plus } from 'lucide-react';
+import { cartStore } from '@/lib/cartStore';
 
 interface Product {
   _id: string;
@@ -25,7 +26,12 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
-  const [buyingProduct, setBuyingProduct] = useState<string | null>(null);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    setCartCount(cartStore.getCount());
+  }, []);
 
   const categories = ['all', 'Bible', 'Books', 'Stickers', 'T-Shirts', 'Accessories', 'Other'];
 
@@ -49,64 +55,21 @@ export default function ShopPage() {
     ? products 
     : products.filter(p => p.category === selectedCategory);
 
-  const handleBuy = async (product: Product) => {
-    setBuyingProduct(product._id);
+  const addToCart = (product: Product) => {
+    setAddingToCart(product._id);
     
-    try {
-      // Collect user information
-      const firstName = prompt('Enter your first name:');
-      if (!firstName) {
-        setBuyingProduct(null);
-        return;
-      }
-      
-      const lastName = prompt('Enter your last name:');
-      if (!lastName) {
-        setBuyingProduct(null);
-        return;
-      }
-      
-      const email = prompt('Enter your email:');
-      if (!email) {
-        setBuyingProduct(null);
-        return;
-      }
-      
-      const phoneNumber = prompt('Enter your phone number (e.g., 0909090909):');
-      if (!phoneNumber) {
-        setBuyingProduct(null);
-        return;
-      }
-
-      const response = await fetch('/api/payment/initialize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: product.price,
-          email,
-          firstName,
-          lastName,
-          phoneNumber,
-          type: 'product',
-          productId: product._id,
-          productName: product.name
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success && data.checkoutUrl) {
-        // Redirect to Chapa checkout
-        window.location.href = data.checkoutUrl;
-      } else {
-        alert('Failed to initialize payment. Please try again.');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setBuyingProduct(null);
-    }
+    cartStore.addItem({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl,
+      category: product.category
+    });
+    
+    setCartCount(cartStore.getCount());
+    
+    // Show feedback
+    setTimeout(() => setAddingToCart(null), 1000);
   };
 
   return (
@@ -130,14 +93,29 @@ export default function ShopPage() {
                 <p className="text-xs sm:text-sm text-gray-600">Support our ministry</p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/')}
-              className="border-2 hover:bg-primary/10"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Home
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push('/cart')}
+                className="border-2 hover:bg-primary/10 relative"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                Cart
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-secondary text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push('/')}
+                className="border-2 hover:bg-primary/10"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Home
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -251,15 +229,21 @@ export default function ShopPage() {
                         )}
                       </div>
                       <Button 
-                        className="w-full gradient-primary text-white"
-                        disabled={product.stock === 0 || buyingProduct === product._id}
-                        onClick={() => handleBuy(product)}
+                        className="w-full gradient-primary text-white h-12"
+                        disabled={product.stock === 0 || addingToCart === product._id}
+                        onClick={() => addToCart(product)}
                       >
-                        {buyingProduct === product._id ? 'Processing...' : product.stock === 0 ? 'Out of Stock' : `Buy Now - ${product.price} ETB`}
+                        {addingToCart === product._id ? (
+                          <span className="animate-pulse">Added!</span>
+                        ) : product.stock === 0 ? (
+                          'Out of Stock'
+                        ) : (
+                          <>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add to Cart
+                          </>
+                        )}
                       </Button>
-                      <p className="text-xs text-center text-gray-500">
-                        Secure payment via Chapa
-                      </p>
                     </div>
                   </CardContent>
                 </Card>

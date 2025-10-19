@@ -47,8 +47,8 @@ export function PaymentSettingsDialog({ open, onOpenChange }: Props) {
         setChapaPublicKey(data.settings.chapaPublicKey || '');
         setBankAccounts(data.settings.bankAccounts || []);
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
+      console.error('Failed to save settings');
     }
   };
 

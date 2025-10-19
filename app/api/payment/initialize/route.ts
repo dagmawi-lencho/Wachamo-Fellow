@@ -62,8 +62,12 @@ export async function POST(request: NextRequest) {
     }
   } catch (error: unknown) {
     console.error('Payment initialization error:', error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
     const message = error instanceof Error ? error.message : 'Failed to initialize payment';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ 
+      error: message,
+      details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+    }, { status: 500 });
   }
 }
 

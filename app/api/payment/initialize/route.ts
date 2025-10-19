@@ -36,20 +36,23 @@ export async function POST(request: NextRequest) {
     const paymentData = {
       amount: amount.toString(),
       currency: 'ETB',
-      email,
+      email: email,
       first_name: firstName,
       last_name: lastName,
-      phone_number: phoneNumber,
       tx_ref: txRef,
-      callback_url: `${process.env.NEXTAUTH_URL}/payment/verify?tx_ref=${txRef}`,
-      return_url: `${process.env.NEXTAUTH_URL}/payment/success?tx_ref=${txRef}`,
+      callback_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/payment/verify`,
+      return_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/success?tx_ref=${txRef}`,
       customization: {
         title: type === 'donation' ? 'Wachamo Fellowship Donation' : 'Wachamo Fellowship Shop',
         description: productName || 'Support Wachamo Fellowship',
       }
     };
     
+    console.log('Initializing Chapa with:', JSON.stringify(paymentData, null, 2));
+    
     const response = await chapa.initialize(paymentData);
+    
+    console.log('Chapa response:', JSON.stringify(response, null, 2));
     
     if (response.status === 'success' && response.data) {
       return NextResponse.json({

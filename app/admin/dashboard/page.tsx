@@ -90,14 +90,14 @@ export default function AdminDashboard() {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    fellowshipTeam: '',
-    college: '',
-    department: '',
-    membershipStatus: '',
-    sex: '',
-    bornAgain: '',
-    attendingBibleStudy: '',
-    academicYear: ''
+    fellowshipTeam: 'all',
+    college: 'all',
+    department: 'all',
+    membershipStatus: 'all',
+    sex: 'all',
+    bornAgain: 'all',
+    attendingBibleStudy: 'all',
+    academicYear: 'all'
   });
 
   useEffect(() => {
@@ -225,15 +225,15 @@ export default function AdminDashboard() {
         
         if (!matchesSearch) return false;
 
-        // Apply all filters
-        if (filters.fellowshipTeam && member.fellowshipTeam !== filters.fellowshipTeam) return false;
-        if (filters.college && member.college !== filters.college) return false;
-        if (filters.department && member.department !== filters.department) return false;
-        if (filters.membershipStatus && member.membershipStatus !== filters.membershipStatus) return false;
-        if (filters.sex && member.sex !== filters.sex) return false;
-        if (filters.bornAgain && member.bornAgain !== filters.bornAgain) return false;
-        if (filters.attendingBibleStudy && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
-        if (filters.academicYear && member.academicYear !== filters.academicYear) return false;
+        // Apply all filters (skip if filter is "all" or empty)
+        if (filters.fellowshipTeam && filters.fellowshipTeam !== 'all' && member.fellowshipTeam !== filters.fellowshipTeam) return false;
+        if (filters.college && filters.college !== 'all' && member.college !== filters.college) return false;
+        if (filters.department && filters.department !== 'all' && member.department !== filters.department) return false;
+        if (filters.membershipStatus && filters.membershipStatus !== 'all' && member.membershipStatus !== filters.membershipStatus) return false;
+        if (filters.sex && filters.sex !== 'all' && member.sex !== filters.sex) return false;
+        if (filters.bornAgain && filters.bornAgain !== 'all' && member.bornAgain !== filters.bornAgain) return false;
+        if (filters.attendingBibleStudy && filters.attendingBibleStudy !== 'all' && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
+        if (filters.academicYear && filters.academicYear !== 'all' && member.academicYear !== filters.academicYear) return false;
 
         return true;
       });
@@ -245,18 +245,18 @@ export default function AdminDashboard() {
 
   const clearFilters = () => {
     setFilters({
-      fellowshipTeam: '',
-      college: '',
-      department: '',
-      membershipStatus: '',
-      sex: '',
-      bornAgain: '',
-      attendingBibleStudy: '',
-      academicYear: ''
+      fellowshipTeam: 'all',
+      college: 'all',
+      department: 'all',
+      membershipStatus: 'all',
+      sex: 'all',
+      bornAgain: 'all',
+      attendingBibleStudy: 'all',
+      academicYear: 'all'
     });
   };
 
-  const hasActiveFilters = Object.values(filters).some(value => value !== '');
+  const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== 'all');
 
   const exportToExcel = () => {
     // Dynamic import to avoid build issues
@@ -598,7 +598,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All teams" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Teams</SelectItem>
+                              <SelectItem value="all">All Teams</SelectItem>
                               {fellowshipTeams.map((team) => (
                                 <SelectItem key={team} value={team}>
                                   {team}
@@ -619,7 +619,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All colleges" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Colleges</SelectItem>
+                              <SelectItem value="all">All Colleges</SelectItem>
                               {colleges.map((college) => (
                                 <SelectItem key={college} value={college}>
                                   {college}
@@ -640,7 +640,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All statuses" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Statuses</SelectItem>
+                              <SelectItem value="all">All Statuses</SelectItem>
                               <SelectItem value="New Member">New Member</SelectItem>
                               <SelectItem value="Existing Member">Existing Member</SelectItem>
                             </SelectContent>
@@ -658,7 +658,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="all">All</SelectItem>
                               <SelectItem value="Male">Male</SelectItem>
                               <SelectItem value="Female">Female</SelectItem>
                             </SelectContent>
@@ -676,7 +676,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All years" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All Years</SelectItem>
+                              <SelectItem value="all">All Years</SelectItem>
                               <SelectItem value="1st Year">1st Year</SelectItem>
                               <SelectItem value="2nd Year">2nd Year</SelectItem>
                               <SelectItem value="3rd Year">3rd Year</SelectItem>
@@ -698,7 +698,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="all">All</SelectItem>
                               <SelectItem value="Yes">Yes</SelectItem>
                               <SelectItem value="No">No</SelectItem>
                             </SelectContent>
@@ -716,7 +716,7 @@ export default function AdminDashboard() {
                               <SelectValue placeholder="All" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">All</SelectItem>
+                              <SelectItem value="all">All</SelectItem>
                               <SelectItem value="Yes">Attending</SelectItem>
                               <SelectItem value="No">Not Attending</SelectItem>
                             </SelectContent>
@@ -728,7 +728,7 @@ export default function AdminDashboard() {
                       {hasActiveFilters && (
                         <div className="mt-4 flex flex-wrap gap-2">
                           {Object.entries(filters).map(([key, value]) => {
-                            if (!value) return null;
+                            if (!value || value === 'all') return null;
                             return (
                               <Badge
                                 key={key}

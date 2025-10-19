@@ -211,13 +211,17 @@ export default function AdminDashboard() {
       return (members || []).filter(member => {
         if (!member) return false;
         
-        // Search filter
+        // Search filter - searches across multiple fields
         const searchLower = searchTerm.toLowerCase();
         const matchesSearch = !searchTerm || 
           member.fullName?.toLowerCase().includes(searchLower) ||
           member.studentId?.toLowerCase().includes(searchLower) ||
           member.department?.toLowerCase().includes(searchLower) ||
-          member.college?.toLowerCase().includes(searchLower);
+          member.college?.toLowerCase().includes(searchLower) ||
+          member.membershipStatus?.toLowerCase().includes(searchLower) ||
+          member.fellowshipTeam?.toLowerCase().includes(searchLower) ||
+          member.section?.toLowerCase().includes(searchLower) ||
+          member.academicYear?.toLowerCase().includes(searchLower);
         
         if (!matchesSearch) return false;
 
@@ -554,7 +558,7 @@ export default function AdminDashboard() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search by name, student ID, department, or college..."
+                      placeholder="Search by name, ID, department, college, team, status, year..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"

@@ -53,7 +53,25 @@ export default function ShopPage() {
     setBuyingProduct(product._id);
     
     try {
-      // For now, ask for phone number via prompt
+      // Collect user information
+      const firstName = prompt('Enter your first name:');
+      if (!firstName) {
+        setBuyingProduct(null);
+        return;
+      }
+      
+      const lastName = prompt('Enter your last name:');
+      if (!lastName) {
+        setBuyingProduct(null);
+        return;
+      }
+      
+      const email = prompt('Enter your email:');
+      if (!email) {
+        setBuyingProduct(null);
+        return;
+      }
+      
       const phoneNumber = prompt('Enter your phone number (e.g., 0909090909):');
       if (!phoneNumber) {
         setBuyingProduct(null);
@@ -65,6 +83,9 @@ export default function ShopPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: product.price,
+          email,
+          firstName,
+          lastName,
           phoneNumber,
           type: 'product',
           productId: product._id,

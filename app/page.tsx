@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Cross, BookOpen, Users, Heart, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const router = useRouter();
@@ -51,11 +52,12 @@ export default function Home() {
             className="mb-8 relative cross-rays"
           >
             {/* Logo/Icon */}
-            <div className="w-48 h-48 md:w-56 md:h-56 mx-auto mb-8">
-              <img 
+            <div className="w-48 h-48 md:w-56 md:h-56 mx-auto mb-8 relative">
+              <Image 
                 src="/logo.png" 
                 alt="Wachamo Fellowship Logo" 
-                className="w-full h-full object-contain drop-shadow-2xl"
+                fill
+                className="object-contain drop-shadow-2xl"
               />
             </div>
           </motion.div>

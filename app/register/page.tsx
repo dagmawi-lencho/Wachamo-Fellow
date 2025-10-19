@@ -19,6 +19,7 @@ import {
 import { colleges, getDepartmentsByCollege } from '@/lib/academicData';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import Image from 'next/image';
 
 interface FormData {
   // Personal Information
@@ -287,9 +288,11 @@ export default function RegisterPage() {
           className="text-center mb-8"
         >
           <div className="flex flex-col items-center justify-center gap-4 mb-6">
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Wachamo Fellowship Logo" 
+              width={112}
+              height={112}
               className="w-24 h-24 sm:w-28 sm:h-28 object-contain drop-shadow-xl"
             />
             <div className="text-center">

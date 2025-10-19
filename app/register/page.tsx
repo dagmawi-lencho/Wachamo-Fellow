@@ -278,25 +278,27 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-blue-50 py-8 px-4">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 py-4 sm:py-8 px-4">
+      <div className="container mx-auto max-w-4xl w-full">
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="text-center mb-8"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex flex-col items-center justify-center gap-4 mb-6">
             <img 
               src="/logo.png" 
               alt="Wachamo Fellowship Logo" 
-              className="w-12 h-12 object-contain"
+              className="w-24 h-24 sm:w-28 sm:h-28 object-contain drop-shadow-xl"
             />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Fellowship Registration
-            </h1>
+            <div className="text-center">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+                Fellowship Registration
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600">Join the Wachamo University Fellowship BSC Team</p>
+            </div>
           </div>
-          <p className="text-muted-foreground">Join the Wachamo University Fellowship BSC Team</p>
         </motion.div>
 
         {/* Progress Bar */}
@@ -306,7 +308,7 @@ export default function RegisterPage() {
           className="mb-8"
         >
           <Progress value={progress} className="h-3 mb-4" />
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-1 sm:gap-2">
             {steps.map((step) => (
               <div
                 key={step.id}
@@ -314,18 +316,18 @@ export default function RegisterPage() {
                   currentStep >= step.id ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 transition-all ${
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-1 sm:mb-2 transition-all shadow-lg ${
                   currentStep >= step.id 
-                    ? 'bg-gradient-to-r from-primary to-secondary text-white scale-110' 
+                    ? 'bg-gradient-to-r from-primary to-secondary text-white scale-110 ring-2 ring-primary/30' 
                     : 'bg-gray-200'
                 }`}>
                   {currentStep > step.id ? (
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5" />
                   ) : (
-                    <step.icon className="w-5 h-5" />
+                    <step.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </div>
-                <span className="text-xs font-medium text-center hidden md:block">{step.title}</span>
+                <span className="text-[10px] sm:text-xs font-medium text-center hidden sm:block leading-tight">{step.title}</span>
               </div>
             ))}
           </div>
@@ -340,7 +342,7 @@ export default function RegisterPage() {
             exit={{ x: -100, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="shadow-2xl border-2 border-primary/20">
+            <Card className="shadow-2xl border border-white/40 ring-1 ring-primary/10 backdrop-blur-xl bg-white/95">
               <CardHeader className="gradient-spiritual text-white">
                 <div className="flex items-center gap-3">
                   {steps[currentStep - 1] && (

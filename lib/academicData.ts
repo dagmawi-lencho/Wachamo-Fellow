@@ -13,6 +13,8 @@ export const colleges = [
 // Departments organized by college
 export const departmentsByCollege: Record<string, string[]> = {
   "Engineering & Technology": [
+    "Freshman",
+    "Pre-Engineering",
     "Freshman and Pre-Engineering",
     "BSc. in Architecture",
     "BSc. in Chemical Engineering",
@@ -39,6 +41,7 @@ export const departmentsByCollege: Record<string, string[]> = {
     "BSc in Geology",
     "BSc in Sport Science",
     "BSc in Industrial Chemistry",
+    "Other Natural Science",
   ],
   
   "Medicine and Health Science": [
@@ -89,6 +92,7 @@ export const departmentsByCollege: Record<string, string[]> = {
     "BA in Kambatisa (Durame Campus)",
     "BA in Psychology",
     "BA in Law (LLB)",
+    "Other Social Science",
   ],
   
   "Education & Behavioral Science": [

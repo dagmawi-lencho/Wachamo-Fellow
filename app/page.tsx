@@ -97,6 +97,22 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
                 </span>
               </Button>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/shop')}
+                  className="border-2 hover:bg-primary/10"
+                >
+                  Visit Shop
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push('/donate')}
+                  className="border-2 hover:bg-primary/10"
+                >
+                  Donate
+                </Button>
+              </div>
             </motion.div>
 
             {/* Feature Cards */}

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { ShoppingCart, Heart, Package, ArrowLeft, Tag } from 'lucide-react';
 
 interface Product {
@@ -54,9 +55,11 @@ export default function ShopPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img 
+              <Image 
                 src="/logo.png" 
                 alt="Fellowship Logo" 
+                width={48}
+                height={48}
                 className="w-12 h-12 object-contain"
               />
               <div>
@@ -135,7 +138,7 @@ export default function ShopPage() {
                 <Package className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-xl font-bold mb-2">No Products Yet</h3>
                 <p className="text-gray-600 mb-4">
-                  We're currently preparing amazing products for you. Check back soon!
+                  We&apos;re currently preparing amazing products for you. Check back soon!
                 </p>
                 <Button onClick={() => router.push('/')} className="gradient-primary text-white">
                   Back to Home
@@ -154,12 +157,13 @@ export default function ShopPage() {
               >
                 <Card className="h-full hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-white/40 bg-white/95 backdrop-blur-xl">
                   <CardHeader>
-                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4 relative">
                       {product.imageUrl ? (
-                        <img 
+                        <Image 
                           src={product.imageUrl} 
                           alt={product.name}
-                          className="w-full h-full object-cover rounded-xl"
+                          fill
+                          className="object-cover rounded-xl"
                         />
                       ) : (
                         <Package className="w-20 h-20 text-primary/40" />

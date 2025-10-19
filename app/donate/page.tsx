@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { Heart, ArrowLeft, Send, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { DonateForm } from './DonateForm';
 
 export default function DonatePage() {
   const router = useRouter();
@@ -36,8 +37,12 @@ export default function DonatePage() {
           <p className="text-gray-700 max-w-2xl mx-auto">Your donation helps us disciple students, share the Gospel, and serve our community in love.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+            <DonateForm />
+          </motion.div>
+
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
             <Card className="bg-white/90 backdrop-blur-xl border border-primary/20">
               <CardHeader>
                 <CardTitle>Bank Transfer</CardTitle>
@@ -61,7 +66,7 @@ export default function DonatePage() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+          <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
             <Card className="bg-white/90 backdrop-blur-xl border border-primary/20">
               <CardHeader>
                 <CardTitle>Give In Person</CardTitle>

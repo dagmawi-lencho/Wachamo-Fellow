@@ -25,6 +25,7 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [buyingProduct, setBuyingProduct] = useState<string | null>(null);
 
   const categories = ['all', 'Bible', 'Books', 'Stickers', 'T-Shirts', 'Accessories', 'Other'];
 
@@ -47,6 +48,41 @@ export default function ShopPage() {
   const filteredProducts = selectedCategory === 'all' 
     ? products 
     : products.filter(p => p.category === selectedCategory);
+
+  const handleBuy = async (product: Product) => {
+    setBuyingProduct(product._id);
+    
+    try {
+      const response = await fetch('/api/payment/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: product.price,
+          email: 'customer@example.com', // TODO: Get from user input
+          firstName: 'Customer',
+          lastName: 'Name',
+          phoneNumber: '0900000000',
+          type: 'product',
+          productId: product._id,
+          productName: product.name
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && data.checkoutUrl) {
+        // Redirect to Chapa checkout
+        window.location.href = data.checkoutUrl;
+      } else {
+        alert('Failed to initialize payment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setBuyingProduct(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
@@ -191,12 +227,13 @@ export default function ShopPage() {
                       </div>
                       <Button 
                         className="w-full gradient-primary text-white"
-                        disabled={product.stock === 0}
+                        disabled={product.stock === 0 || buyingProduct === product._id}
+                        onClick={() => handleBuy(product)}
                       >
-                        {product.stock === 0 ? 'Out of Stock' : 'Contact to Order'}
+                        {buyingProduct === product._id ? 'Processing...' : product.stock === 0 ? 'Out of Stock' : `Buy Now - ${product.price} ETB`}
                       </Button>
                       <p className="text-xs text-center text-gray-500">
-                        Payment integration coming soon
+                        Secure payment via Chapa
                       </p>
                     </div>
                   </CardContent>

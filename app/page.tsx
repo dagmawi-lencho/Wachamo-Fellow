@@ -53,7 +53,7 @@ export default function Home() {
           >
             {/* Logo/Icon */}
             <div className="w-48 h-48 md:w-56 md:h-56 mx-auto mb-8 relative">
-              <Image 
+            <Image
                 src="/logo.png" 
                 alt="Wachamo Fellowship Logo" 
                 fill

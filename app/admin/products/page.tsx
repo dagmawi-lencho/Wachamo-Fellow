@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Plus, Package, Pencil, Trash2, ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 import ProductDialog from '@/components/ProductDialog';
 
 interface Product {
@@ -76,7 +76,7 @@ export default function AdminProductsPage() {
       <header className="bg-white/80 backdrop-blur-xl border-b border-primary/20 sticky top-0 z-50 shadow-lg">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+            <Image src="/logo.png" alt="Logo" width={40} height={40} className="w-10 h-10 object-contain" />
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Manage Products</h1>
           </div>
           <Button variant="outline" onClick={() => router.push('/admin/dashboard')} className="border-2 hover:bg-primary/10">
@@ -119,9 +119,9 @@ export default function AdminProductsPage() {
               <motion.div key={p._id} initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
                 <Card className="border border-white/40 bg-white/95 backdrop-blur-xl">
                   <CardHeader>
-                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4">
+                    <div className="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center mb-4 relative">
                       {p.imageUrl ? (
-                        <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover rounded-xl" />
+                        <Image src={p.imageUrl} alt={p.name} fill className="object-cover rounded-xl" />
                       ) : (
                         <Package className="w-20 h-20 text-primary/40" />
                       )}

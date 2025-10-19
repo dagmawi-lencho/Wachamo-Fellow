@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -358,14 +358,22 @@ export default function AdminDashboard() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <Button
+                variant="outline"
+                onClick={() => router.push('/admin/products')}
+                className="border-2 hover:bg-orange-50 hover:border-orange-300"
+              >
+                <ShoppingCart className="w-4 h-4 mr-2" />
+                <span className="hidden md:inline">Products</span>
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowAdminDialog(true)}
                 className="border-2 hover:bg-purple-50 hover:border-purple-300"
               >
                 <Shield className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Manage Admins</span>
+                <span className="hidden md:inline">Admins</span>
               </Button>
               <Button
                 variant="outline"
@@ -373,7 +381,7 @@ export default function AdminDashboard() {
                 className="border-2 hover:bg-primary/10"
               >
                 <Settings className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Registration</span>
+                <span className="hidden md:inline">Settings</span>
               </Button>
               <Button
                 variant="outline"

@@ -53,15 +53,19 @@ export default function ShopPage() {
     setBuyingProduct(product._id);
     
     try {
+      // For now, ask for phone number via prompt
+      const phoneNumber = prompt('Enter your phone number (e.g., 0909090909):');
+      if (!phoneNumber) {
+        setBuyingProduct(null);
+        return;
+      }
+
       const response = await fetch('/api/payment/initialize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: product.price,
-          email: 'customer@example.com', // TODO: Get from user input
-          firstName: 'Customer',
-          lastName: 'Name',
-          phoneNumber: '0900000000',
+          phoneNumber,
           type: 'product',
           productId: product._id,
           productName: product.name

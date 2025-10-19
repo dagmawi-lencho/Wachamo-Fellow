@@ -10,9 +10,6 @@ import { Heart } from 'lucide-react';
 export function DonateForm() {
   const [formData, setFormData] = useState({
     amount: '',
-    firstName: '',
-    lastName: '',
-    email: '',
     phoneNumber: ''
   });
   const [processing, setProcessing] = useState(false);
@@ -27,9 +24,6 @@ export function DonateForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: parseFloat(formData.amount),
-          email: formData.email,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
           phoneNumber: formData.phoneNumber,
           type: 'donation',
           productName: 'Fellowship Donation'
@@ -74,41 +68,7 @@ export function DonateForm() {
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
               required
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="firstName">First Name *</Label>
-              <Input
-                id="firstName"
-                placeholder="John"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="lastName">Last Name *</Label>
-              <Input
-                id="lastName"
-                placeholder="Doe"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="john@example.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
+            <p className="text-xs text-gray-500">Minimum donation: 10 ETB</p>
           </div>
 
           <div className="grid gap-2">
@@ -121,6 +81,9 @@ export function DonateForm() {
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               required
             />
+            <p className="text-xs text-gray-500">
+              You'll receive USSD prompt on your phone (CBE Birr, Telebirr, etc.)
+            </p>
           </div>
 
           <Button

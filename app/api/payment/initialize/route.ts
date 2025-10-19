@@ -12,10 +12,15 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const data = await request.json();
-    const { amount, email, firstName, lastName, phoneNumber, type, productId, productName } = data;
+    const { amount, phoneNumber, type, productId, productName } = data;
     
     // Generate unique transaction reference
     const txRef = `WCF-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Use phone number as email (required by Chapa but not actually used for USSD)
+    const email = phoneNumber.replace(/^0/, '251') + '@temp.wachamo.fellowship';
+    const firstName = 'Fellowship';
+    const lastName = 'Member';
     
     // Create transaction record
     await Transaction.create({
@@ -32,25 +37,20 @@ export async function POST(request: NextRequest) {
       status: 'pending'
     });
     
-    // Initialize Chapa payment - using correct format from chapa-nodejs SDK
+    // Initialize Chapa payment - minimal required fields
     const paymentData = {
-      amount,
+      amount: amount,
       currency: 'ETB',
-      email,
+      email: email,
       first_name: firstName,
       last_name: lastName,
       tx_ref: txRef,
-      callback_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/payment/verify`,
       return_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/payment/success?tx_ref=${txRef}`,
-      customization: {
-        title: type === 'donation' ? 'Wachamo Fellowship Donation' : 'Wachamo Fellowship Shop',
-        description: productName || 'Support Wachamo Fellowship',
-      }
     };
     
     console.log('Initializing Chapa with:', JSON.stringify(paymentData, null, 2));
     
-    const response = await chapa.initialize(paymentData, { autoRef: true });
+    const response = await chapa.initialize(paymentData);
     
     console.log('Chapa response:', JSON.stringify(response, null, 2));
     

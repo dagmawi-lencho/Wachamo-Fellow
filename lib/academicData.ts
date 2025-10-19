@@ -1,6 +1,7 @@
 // Wachamo University Academic Data
 
 export const colleges = [
+  "Freshman",
   "Engineering & Technology",
   "Natural & Computational Science",
   "Medicine and Health Science",
@@ -12,10 +13,14 @@ export const colleges = [
 
 // Departments organized by college
 export const departmentsByCollege: Record<string, string[]> = {
-  "Engineering & Technology": [
+  "Freshman": [
     "Freshman",
     "Pre-Engineering",
-    "Freshman and Pre-Engineering",
+    "Other Natural Science",
+    "Other Social Science",
+  ],
+  
+  "Engineering & Technology": [
     "BSc. in Architecture",
     "BSc. in Chemical Engineering",
     "BSc. in Civil Engineering",
@@ -41,7 +46,6 @@ export const departmentsByCollege: Record<string, string[]> = {
     "BSc in Geology",
     "BSc in Sport Science",
     "BSc in Industrial Chemistry",
-    "Other Natural Science",
   ],
   
   "Medicine and Health Science": [
@@ -92,7 +96,6 @@ export const departmentsByCollege: Record<string, string[]> = {
     "BA in Kambatisa (Durame Campus)",
     "BA in Psychology",
     "BA in Law (LLB)",
-    "Other Social Science",
   ],
   
   "Education & Behavioral Science": [

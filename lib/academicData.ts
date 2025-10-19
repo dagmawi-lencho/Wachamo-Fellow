@@ -13,6 +13,7 @@ export const colleges = [
 // Departments organized by college
 export const departmentsByCollege: Record<string, string[]> = {
   "Engineering & Technology": [
+    "Freshman and Pre-Engineering",
     "BSc. in Architecture",
     "BSc. in Chemical Engineering",
     "BSc. in Civil Engineering",

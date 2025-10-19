@@ -10,7 +10,8 @@ import {
   Edit, Trash2, Shield,
   Cross, Heart, GraduationCap,
   BarChart3, PieChart, Activity,
-  Download, Filter, X
+  Download, Filter, X,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,8 +98,11 @@ export default function AdminDashboard() {
     sex: 'all',
     bornAgain: 'all',
     attendingBibleStudy: 'all',
-    academicYear: 'all'
+    academicYear: 'all',
+    alphabetFilter: 'all'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     checkAuth();
@@ -225,6 +229,12 @@ export default function AdminDashboard() {
         
         if (!matchesSearch) return false;
 
+        // Alphabet filter
+        if (filters.alphabetFilter && filters.alphabetFilter !== 'all') {
+          const firstLetter = member.fullName?.[0]?.toLowerCase();
+          if (firstLetter !== filters.alphabetFilter.toLowerCase()) return false;
+        }
+
         // Apply all filters (skip if filter is "all" or empty)
         if (filters.fellowshipTeam && filters.fellowshipTeam !== 'all' && member.fellowshipTeam !== filters.fellowshipTeam) return false;
         if (filters.college && filters.college !== 'all' && member.college !== filters.college) return false;
@@ -252,17 +262,31 @@ export default function AdminDashboard() {
       sex: 'all',
       bornAgain: 'all',
       attendingBibleStudy: 'all',
-      academicYear: 'all'
+      academicYear: 'all',
+      alphabetFilter: 'all'
     });
+    setCurrentPage(1);
   };
 
   const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== 'all');
+
+  // Pagination
+  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters]);
 
   const exportToExcel = () => {
     // Dynamic import to avoid build issues
     import('xlsx').then((XLSX) => {
       const worksheet = XLSX.utils.json_to_sheet(
-        filteredMembers.map(member => ({
+        filteredMembers.map((member, index) => ({
+          'No.': index + 1,
           'Full Name': member.fullName,
           'Sex': member.sex,
           'Age': member.age,
@@ -531,10 +555,11 @@ export default function AdminDashboard() {
                     <div>
                       <CardTitle>Registered Members</CardTitle>
                       <CardDescription>
-                        Manage all fellowship members • {filteredMembers.length} of {members?.length || 0} shown
+                        Manage all fellowship members • Showing {startIndex + 1}-{Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} 
+                        {filteredMembers.length !== members?.length && ` (filtered from ${members?.length || 0} total)`}
                       </CardDescription>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <Button
                         variant="outline"
                         onClick={() => setShowFilters(!showFilters)}
@@ -584,6 +609,32 @@ export default function AdminDashboard() {
                             Clear All
                           </Button>
                         )}
+                      </div>
+
+                      {/* Alphabet Filter */}
+                      <div className="mb-4 pb-4 border-b border-primary/10">
+                        <Label className="text-sm font-semibold mb-2 block">Filter by First Letter</Label>
+                        <div className="flex flex-wrap gap-1">
+                          <Button
+                            variant={filters.alphabetFilter === 'all' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setFilters({ ...filters, alphabetFilter: 'all' })}
+                            className={filters.alphabetFilter === 'all' ? 'gradient-primary text-white' : ''}
+                          >
+                            All
+                          </Button>
+                          {'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((letter) => (
+                            <Button
+                              key={letter}
+                              variant={filters.alphabetFilter === letter ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setFilters({ ...filters, alphabetFilter: letter })}
+                              className={filters.alphabetFilter === letter ? 'gradient-primary text-white' : 'hover:bg-primary/10'}
+                            >
+                              {letter}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -751,10 +802,56 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Pagination Controls - Top */}
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm">Show:</Label>
+                    <Select value={itemsPerPage.toString()} onValueChange={(val) => {
+                      setItemsPerPage(parseInt(val));
+                      setCurrentPage(1);
+                    }}>
+                      <SelectTrigger className="w-20 h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5</SelectItem>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">entries per page</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Page {currentPage} of {totalPages || 1}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="rounded-lg border overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-primary/5">
+                        <TableHead className="w-16">No.</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Student ID</TableHead>
                         <TableHead>Department</TableHead>
@@ -764,8 +861,16 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredMembers.map((member) => (
+                      {paginatedMembers.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No members found matching your criteria
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        paginatedMembers.map((member, index) => (
                         <TableRow key={member._id} className="hover:bg-primary/5">
+                          <TableCell className="font-semibold text-gray-600">{startIndex + index + 1}</TableCell>
                           <TableCell className="font-medium">{member.fullName}</TableCell>
                           <TableCell>{member.studentId}</TableCell>
                           <TableCell>{member.department}</TableCell>
@@ -821,9 +926,80 @@ export default function AdminDashboard() {
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
+                      )))}
                     </TableBody>
                   </Table>
+                </div>
+
+                {/* Pagination Controls - Bottom */}
+                <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(endIndex, filteredMembers.length)} of {filteredMembers.length} entries
+                  </p>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
+                    >
+                      First
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    
+                    {/* Page Numbers */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={currentPage === pageNum ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={currentPage === pageNum ? 'gradient-primary text-white' : ''}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                    >
+                      Next
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                    >
+                      Last
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

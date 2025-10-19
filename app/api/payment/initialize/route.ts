@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
+import PaymentSettings from '@/models/PaymentSettings';
 import { Chapa } from 'chapa-nodejs';
 
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
+    
+    // Get Chapa keys from database
+    const paymentSettings = await PaymentSettings.findOne();
+    if (!paymentSettings?.chapaSecretKey) {
+      return NextResponse.json({ 
+        error: 'Payment gateway not configured. Please contact administrator.' 
+      }, { status: 503 });
+    }
     
     const data = await request.json();
     const { amount, email, firstName, lastName, phoneNumber, type, productId, productName } = data;
@@ -35,8 +44,8 @@ export async function POST(request: NextRequest) {
       status: 'pending'
     });
     
-    // Initialize Chapa with correct SDK
-    const chapa = new Chapa(process.env.CHAPA_SECRET_KEY || '');
+    // Initialize Chapa with key from database
+    const chapa = new Chapa(paymentSettings.chapaSecretKey);
     
     const response = await chapa.initialize({
       amount: amount,
@@ -67,9 +76,10 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Payment initialization error:', error);
     const message = error instanceof Error ? error.message : 'Failed to initialize payment';
+    const details = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ 
       error: message,
-      details: process.env.NODE_ENV === 'development' ? (error as any)?.message || String(error) : undefined
+      details: process.env.NODE_ENV === 'development' ? details : undefined
     }, { status: 500 });
   }
 }

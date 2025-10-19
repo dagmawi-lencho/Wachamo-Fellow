@@ -11,7 +11,7 @@ import {
   Cross, Heart, GraduationCap,
   BarChart3, PieChart, Activity,
   Download, Filter, X,
-  ChevronLeft, ChevronRight, ShoppingCart
+  ChevronLeft, ChevronRight, ShoppingCart, CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/dialog';
 import { EditMemberDialog } from '@/components/EditMemberDialog';
 import { AdminManagementDialog } from '@/components/AdminManagementDialog';
+import { PaymentSettingsDialog } from '@/components/PaymentSettingsDialog';
 import { Label } from '@/components/ui/label';
 import { colleges } from '@/lib/academicData';
 import { fellowshipTeams } from '@/lib/fellowshipTeams';
@@ -89,6 +90,7 @@ export default function AdminDashboard() {
   });
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);
   const [showAdminDialog, setShowAdminDialog] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     fellowshipTeam: 'all',
@@ -358,38 +360,51 @@ export default function AdminDashboard() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant="outline"
                 onClick={() => router.push('/admin/products')}
                 className="border-2 hover:bg-orange-50 hover:border-orange-300"
+                size="sm"
               >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Products</span>
+                <ShoppingCart className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Products</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowPaymentDialog(true)}
+                className="border-2 hover:bg-green-50 hover:border-green-300"
+                size="sm"
+              >
+                <CreditCard className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Payment</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowAdminDialog(true)}
                 className="border-2 hover:bg-purple-50 hover:border-purple-300"
+                size="sm"
               >
-                <Shield className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Admins</span>
+                <Shield className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Admins</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowSettingsDialog(true)}
                 className="border-2 hover:bg-primary/10"
+                size="sm"
               >
-                <Settings className="w-4 h-4 mr-2" />
-                <span className="hidden md:inline">Settings</span>
+                <Settings className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Registration</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={handleLogout}
                 className="border-2 hover:bg-destructive/10 hover:text-destructive"
+                size="sm"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
+                <LogOut className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
@@ -1117,6 +1132,12 @@ export default function AdminDashboard() {
       <AdminManagementDialog
         open={showAdminDialog}
         onOpenChange={setShowAdminDialog}
+      />
+
+      {/* Payment Settings Dialog */}
+      <PaymentSettingsDialog
+        open={showPaymentDialog}
+        onOpenChange={setShowPaymentDialog}
       />
 
       {/* Edit Member Dialog */}

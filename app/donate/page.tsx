@@ -8,9 +8,31 @@ import { Heart, ArrowLeft, Send, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { DonateForm } from './DonateForm';
+import { useState, useEffect } from 'react';
+
+interface BankAccount {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+}
 
 export default function DonatePage() {
   const router = useRouter();
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+
+  useEffect(() => {
+    fetchBankAccounts();
+  }, []);
+
+  const fetchBankAccounts = async () => {
+    try {
+      const res = await fetch('/api/payment-settings');
+      const data = await res.json();
+      setBankAccounts(data.settings?.bankAccounts || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
@@ -46,17 +68,29 @@ export default function DonatePage() {
             <Card className="bg-white/90 backdrop-blur-xl border border-primary/20">
               <CardHeader>
                 <CardTitle>Bank Transfer</CardTitle>
-                <CardDescription>Use the details below to make a transfer</CardDescription>
+                <CardDescription>Transfer directly to our bank accounts</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <span className="text-gray-600">Bank</span>
-                  <span className="font-semibold">Commercial Bank of Ethiopia</span>
-                  <span className="text-gray-600">Account Name</span>
-                  <span className="font-semibold">Wachamo Fellowship</span>
-                  <span className="text-gray-600">Account Number</span>
-                  <span className="font-semibold">1234 5678 9012</span>
-                </div>
+                {bankAccounts.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    Bank details will be available soon
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {bankAccounts.map((bank, index) => (
+                      <div key={index} className="p-3 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl">
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <span className="text-gray-600">Bank</span>
+                          <span className="font-semibold">{bank.bankName}</span>
+                          <span className="text-gray-600">Account Name</span>
+                          <span className="font-semibold">{bank.accountName}</span>
+                          <span className="text-gray-600">Account Number</span>
+                          <span className="font-semibold font-mono">{bank.accountNumber}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <Separator className="my-2" />
                 <p className="text-xs text-gray-600">After transferring, please send your receipt to our Telegram for confirmation.</p>
                 <Button onClick={() => window.open('https://t.me/WcuEvaSU', '_blank')} className="w-full gradient-secondary text-white">

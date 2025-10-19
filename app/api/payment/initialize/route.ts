@@ -32,11 +32,11 @@ export async function POST(request: NextRequest) {
       status: 'pending'
     });
     
-    // Initialize Chapa payment
+    // Initialize Chapa payment - using correct format from chapa-nodejs SDK
     const paymentData = {
-      amount: amount.toString(),
+      amount,
       currency: 'ETB',
-      email: email,
+      email,
       first_name: firstName,
       last_name: lastName,
       tx_ref: txRef,
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     
     console.log('Initializing Chapa with:', JSON.stringify(paymentData, null, 2));
     
-    const response = await chapa.initialize(paymentData);
+    const response = await chapa.initialize(paymentData, { autoRef: true });
     
     console.log('Chapa response:', JSON.stringify(response, null, 2));
     

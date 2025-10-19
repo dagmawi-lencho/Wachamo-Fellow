@@ -31,24 +31,8 @@ export default function Home() {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="flex justify-between items-center mb-8"
+          className="flex justify-end items-center mb-8"
         >
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-glow"></div>
-              <img 
-                src="/logo.png" 
-                alt="Wachamo Fellowship Logo" 
-                className="relative w-16 h-16 rounded-full object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Wachamo Fellowship
-              </h1>
-              <p className="text-sm text-muted-foreground">Evangelical Students Union</p>
-            </div>
-          </div>
           <Button
             variant="outline"
             onClick={() => router.push('/admin/login')}

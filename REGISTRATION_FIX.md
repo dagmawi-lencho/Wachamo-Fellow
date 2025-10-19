@@ -288,3 +288,4 @@ setRegistrationOpen(data.isOpen !== false)
 
 **Ready to deploy to Vercel!** 🚀
 
+

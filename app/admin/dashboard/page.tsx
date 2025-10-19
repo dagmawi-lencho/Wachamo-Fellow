@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { 
@@ -205,28 +206,38 @@ export default function AdminDashboard() {
     }
   };
 
-  const filteredMembers = (members || []).filter(member => {
-    // Search filter
-    const matchesSearch = 
-      member.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.college?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    if (!matchesSearch) return false;
+  const filteredMembers = React.useMemo(() => {
+    try {
+      return (members || []).filter(member => {
+        if (!member) return false;
+        
+        // Search filter
+        const searchLower = searchTerm.toLowerCase();
+        const matchesSearch = !searchTerm || 
+          member.fullName?.toLowerCase().includes(searchLower) ||
+          member.studentId?.toLowerCase().includes(searchLower) ||
+          member.department?.toLowerCase().includes(searchLower) ||
+          member.college?.toLowerCase().includes(searchLower);
+        
+        if (!matchesSearch) return false;
 
-    // Apply all filters
-    if (filters.fellowshipTeam && member.fellowshipTeam !== filters.fellowshipTeam) return false;
-    if (filters.college && member.college !== filters.college) return false;
-    if (filters.department && member.department !== filters.department) return false;
-    if (filters.membershipStatus && member.membershipStatus !== filters.membershipStatus) return false;
-    if (filters.sex && member.sex !== filters.sex) return false;
-    if (filters.bornAgain && member.bornAgain !== filters.bornAgain) return false;
-    if (filters.attendingBibleStudy && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
-    if (filters.academicYear && member.academicYear !== filters.academicYear) return false;
+        // Apply all filters
+        if (filters.fellowshipTeam && member.fellowshipTeam !== filters.fellowshipTeam) return false;
+        if (filters.college && member.college !== filters.college) return false;
+        if (filters.department && member.department !== filters.department) return false;
+        if (filters.membershipStatus && member.membershipStatus !== filters.membershipStatus) return false;
+        if (filters.sex && member.sex !== filters.sex) return false;
+        if (filters.bornAgain && member.bornAgain !== filters.bornAgain) return false;
+        if (filters.attendingBibleStudy && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
+        if (filters.academicYear && member.academicYear !== filters.academicYear) return false;
 
-    return true;
-  });
+        return true;
+      });
+    } catch (error) {
+      console.error('Filter error:', error);
+      return members || [];
+    }
+  }, [members, searchTerm, filters]);
 
   const clearFilters = () => {
     setFilters({
@@ -552,12 +563,7 @@ export default function AdminDashboard() {
 
                   {/* Filter Panel */}
                   {showFilters && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-xl rounded-2xl p-6 border border-primary/20"
-                    >
+                    <div className="bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-xl rounded-2xl p-6 border border-primary/20 animate-in slide-in-from-top duration-300">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold flex items-center gap-2">
                           <Filter className="w-5 h-5 text-primary" />
@@ -736,7 +742,7 @@ export default function AdminDashboard() {
                           })}
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   )}
                 </div>
               </CardHeader>

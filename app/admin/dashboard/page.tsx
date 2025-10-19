@@ -76,6 +76,27 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<Stats | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
+  const [transactions, setTransactions] = useState<Array<{
+    _id: string;
+    type: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    amount: number;
+    productName?: string;
+    status: string;
+    txRef: string;
+    createdAt: string;
+  }>>([]);
+  const [transactionStats, setTransactionStats] = useState<{
+    totalRevenue: number;
+    totalDonations: number;
+    totalSales: number;
+    successCount: number;
+    pendingCount: number;
+    failedCount: number;
+  } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [showMemberDialog, setShowMemberDialog] = useState(false);
@@ -119,6 +140,7 @@ export default function AdminDashboard() {
         fetchStats();
         fetchMembers();
         fetchRegistrationSettings();
+        fetchTransactions();
       } else {
         router.push('/admin/login');
       }
@@ -170,6 +192,44 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Logout failed:', error);
     }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch('/api/transactions');
+      const data = await response.json();
+      setTransactions(data.transactions || []);
+      setTransactionStats(data.stats || null);
+    } catch (error) {
+      console.error('Failed to fetch transactions:', error);
+    }
+  };
+
+  const exportTransactions = () => {
+    import('xlsx').then((XLSX) => {
+      const worksheet = XLSX.utils.json_to_sheet(
+        transactions.map((tx, index) => ({
+          'No.': index + 1,
+          'Type': tx.type === 'donation' ? 'Donation' : 'Product Sale',
+          'Amount (ETB)': tx.amount,
+          'Customer Name': `${tx.firstName} ${tx.lastName}`,
+          'Email': tx.email,
+          'Phone': tx.phoneNumber,
+          'Product': tx.productName || '-',
+          'Status': tx.status,
+          'Transaction Ref': tx.txRef,
+          'Date': new Date(tx.createdAt).toLocaleString()
+        }))
+      );
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
+
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `Wachamo_Transactions_${date}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
+    });
   };
 
   const handleDeleteMember = async () => {
@@ -413,18 +473,22 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 lg:w-[800px]">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
-              Overview
+              <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
             <TabsTrigger value="members" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              Members
+              <span className="hidden sm:inline">Members</span>
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4" />
+              <span className="hidden sm:inline">Transactions</span>
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
-              Analytics
+              <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1023,6 +1087,143 @@ export default function AdminDashboard() {
                       Last
                     </Button>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Transactions Tab */}
+          <TabsContent value="transactions" className="space-y-6">
+            {/* Transaction Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-600">
+                    {transactionStats?.totalRevenue || 0} ETB
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">All successful payments</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-gray-600">Donations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-primary">
+                    {transactionStats?.totalDonations || 0} ETB
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">From generous donors</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-gray-600">Product Sales</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-secondary">
+                    {transactionStats?.totalSales || 0} ETB
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">From shop purchases</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-gray-600">Successful Payments</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-600">
+                    {transactionStats?.successCount || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {transactionStats?.pendingCount || 0} pending • {transactionStats?.failedCount || 0} failed
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Transactions Table */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Transaction History</CardTitle>
+                    <CardDescription>All payments and donations • {transactions.length} total</CardDescription>
+                  </div>
+                  <Button
+                    onClick={exportTransactions}
+                    className="gradient-secondary text-white"
+                    disabled={transactions.length === 0}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Excel
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-lg border overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-primary/5">
+                        <TableHead className="w-12">No.</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Product</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {transactions.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No transactions yet
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        transactions.slice(0, 50).map((tx, index) => (
+                          <TableRow key={tx._id} className="hover:bg-primary/5">
+                            <TableCell className="font-semibold text-gray-600">{index + 1}</TableCell>
+                            <TableCell>
+                              <Badge className={tx.type === 'donation' ? 'gradient-primary text-white' : 'gradient-secondary text-white'}>
+                                {tx.type === 'donation' ? 'Donation' : 'Sale'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{tx.firstName} {tx.lastName}</p>
+                                <p className="text-xs text-gray-600">{tx.email}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell className="max-w-[200px] truncate">{tx.productName || '-'}</TableCell>
+                            <TableCell className="font-bold text-primary">{tx.amount} ETB</TableCell>
+                            <TableCell>
+                              <Badge variant={
+                                tx.status === 'success' ? 'default' : 
+                                tx.status === 'pending' ? 'secondary' : 
+                                'destructive'
+                              } className={
+                                tx.status === 'success' ? 'bg-green-600' :
+                                tx.status === 'pending' ? 'bg-orange-500' :
+                                'bg-red-600'
+                              }>
+                                {tx.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray-600">
+                              {new Date(tx.createdAt).toLocaleDateString()}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </Card>

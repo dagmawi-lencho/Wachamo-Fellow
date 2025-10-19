@@ -74,9 +74,9 @@ export function PaymentSettingsDialog({ open, onOpenChange }: Props) {
       } else {
         setError('Failed to save settings');
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred');
-    } finally {
+    } finally{
       setSaving(false);
     }
   };

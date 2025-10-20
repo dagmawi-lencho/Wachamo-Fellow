@@ -8,11 +8,16 @@ export interface ITransaction extends Document {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  studentId?: string;
   type: 'product' | 'donation';
   productId?: string;
   productName?: string;
-  status: 'pending' | 'success' | 'failed';
-  chapaReference?: string;
+  orderDetails?: any;
+  receiptUrl?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string;
+  approvedBy?: string;
+  approvedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,11 +30,16 @@ const TransactionSchema: Schema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   phoneNumber: { type: String, required: true },
+  studentId: { type: String },
   type: { type: String, enum: ['product', 'donation'], required: true },
   productId: { type: String },
   productName: { type: String },
-  status: { type: String, enum: ['pending', 'success', 'failed'], default: 'pending' },
-  chapaReference: { type: String },
+  orderDetails: { type: Schema.Types.Mixed },
+  receiptUrl: { type: String },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  rejectionReason: { type: String },
+  approvedBy: { type: String },
+  approvedAt: { type: Date },
 }, {
   timestamps: true
 });

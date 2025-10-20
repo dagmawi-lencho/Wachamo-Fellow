@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
+import Image from 'next/image';
 
 export function DonateForm() {
   const [formData, setFormData] = useState({
@@ -15,13 +16,50 @@ export function DonateForm() {
     email: '',
     phoneNumber: ''
   });
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string>('');
   const [processing, setProcessing] = useState(false);
+
+  const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setReceiptFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleDonate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!receiptFile) {
+      alert('Please upload your payment receipt');
+      return;
+    }
+
     setProcessing(true);
 
     try {
+      // Upload receipt
+      const uploadForm = new FormData();
+      uploadForm.append('receipt', receiptFile);
+
+      const uploadRes = await fetch('/api/upload-receipt', {
+        method: 'POST',
+        body: uploadForm
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData.success) {
+        alert('Failed to upload receipt');
+        setProcessing(false);
+        return;
+      }
+
       const response = await fetch('/api/payment/initialize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,17 +70,21 @@ export function DonateForm() {
           lastName: formData.lastName,
           phoneNumber: formData.phoneNumber,
           type: 'donation',
-          productName: 'Fellowship Donation'
+          productName: 'Fellowship Donation',
+          receiptUrl: uploadData.url
         })
       });
 
       const data = await response.json();
 
-      if (data.success && data.checkoutUrl) {
-        // Redirect to Chapa checkout
-        window.location.href = data.checkoutUrl;
+      if (data.success) {
+        alert('Donation submitted! Admin will verify your payment within 24 hours.');
+        // Reset form
+        setFormData({ amount: '', firstName: '', lastName: '', email: '', phoneNumber: '' });
+        setReceiptFile(null);
+        setReceiptPreview('');
       } else {
-        alert('Failed to process donation. Please try again.');
+        alert(data.error || 'Failed to submit donation');
       }
     } catch (error) {
       console.error('Donation error:', error);
@@ -123,16 +165,44 @@ export function DonateForm() {
             />
           </div>
 
+          <div className="grid gap-2">
+            <Label htmlFor="receipt">Payment Receipt * 📸</Label>
+            <Input
+              id="receipt"
+              type="file"
+              accept="image/*"
+              onChange={handleReceiptChange}
+              required
+            />
+            {receiptPreview && (
+              <div className="relative w-full h-32 rounded-lg overflow-hidden border-2 border-primary/20 mt-2">
+                <Image 
+                  src={receiptPreview} 
+                  alt="Receipt preview" 
+                  fill 
+                  className="object-contain bg-gray-50"
+                />
+              </div>
+            )}
+            <p className="text-xs text-gray-500">
+              Upload screenshot of your transfer confirmation
+            </p>
+          </div>
+
           <Button
             type="submit"
             disabled={processing}
             className="w-full h-14 gradient-secondary text-white font-bold text-lg"
           >
-            {processing ? 'Processing...' : `Donate ${formData.amount || '___'} ETB`}
+            {processing ? (
+              <span className="animate-pulse">Uploading...</span>
+            ) : (
+              `Submit Donation ${formData.amount || '___'} ETB`
+            )}
           </Button>
 
-          <p className="text-xs text-center text-gray-500">
-            🔒 Secure payment powered by Chapa
+          <p className="text-xs text-center text-gray-600">
+            ✅ Admin will verify your payment within 24 hours
           </p>
         </form>
       </CardContent>

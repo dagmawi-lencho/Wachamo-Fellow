@@ -21,6 +21,8 @@ export default function CheckoutPage() {
     phoneNumber: '',
     studentId: ''
   });
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string>('');
 
   useEffect(() => {
     const items = cartStore.getCart();
@@ -32,12 +34,47 @@ export default function CheckoutPage() {
 
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+  const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setReceiptFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!receiptFile) {
+      alert('Please upload your payment receipt');
+      return;
+    }
+
     setProcessing(true);
 
     try {
-      // Create order with all cart items
+      // Upload receipt to Cloudinary
+      const uploadForm = new FormData();
+      uploadForm.append('receipt', receiptFile);
+
+      const uploadRes = await fetch('/api/upload-receipt', {
+        method: 'POST',
+        body: uploadForm
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData.success) {
+        alert('Failed to upload receipt. Please try again.');
+        setProcessing(false);
+        return;
+      }
+
+      // Create transaction with receipt
       const response = await fetch('/api/payment/initialize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -151,23 +188,50 @@ export default function CheckoutPage() {
                     />
                   </div>
 
+                  <div className="grid gap-3">
+                    <Label htmlFor="receipt" className="text-base font-bold">Payment Receipt * 📸</Label>
+                    <div className="space-y-3">
+                      <Input
+                        id="receipt"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleReceiptChange}
+                        required
+                        className="h-12"
+                      />
+                      {receiptPreview && (
+                        <div className="relative w-full h-48 rounded-xl overflow-hidden border-2 border-primary/20">
+                          <Image 
+                            src={receiptPreview} 
+                            alt="Receipt preview" 
+                            fill 
+                            className="object-contain bg-gray-50"
+                          />
+                        </div>
+                      )}
+                      <p className="text-xs text-gray-600">
+                        📱 Upload screenshot of your bank transfer, mobile money receipt, or payment confirmation
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="pt-4">
                     <Button
                       type="submit"
                       disabled={processing}
-                      className="w-full h-16 gradient-primary text-white font-bold text-lg shadow-xl hover:shadow-2xl"
+                      className="w-full h-16 gradient-secondary text-white font-bold text-lg shadow-xl hover:shadow-2xl"
                     >
                       {processing ? (
-                        <span className="animate-pulse">Processing...</span>
+                        <span className="animate-pulse">Uploading Receipt...</span>
                       ) : (
                         <>
                           <CreditCard className="w-5 h-5 mr-2" />
-                          Pay {total} ETB
+                          Submit Order - {total} ETB
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-center text-gray-500 mt-3">
-                      🔒 Secure payment via Chapa
+                    <p className="text-xs text-center text-gray-600 mt-3">
+                      ✅ Your order will be verified by admin within 24 hours
                     </p>
                   </div>
                 </form>

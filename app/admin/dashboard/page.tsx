@@ -87,8 +87,10 @@ export default function AdminDashboard() {
     productName?: string;
     status: string;
     txRef: string;
+    receiptUrl?: string;
     createdAt: string;
   }>>([]);
+  const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
   const [transactionStats, setTransactionStats] = useState<{
     totalRevenue: number;
     totalDonations: number;
@@ -202,6 +204,25 @@ export default function AdminDashboard() {
       setTransactionStats(data.stats || null);
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
+    }
+  };
+
+  const handleTransactionAction = async (txId: string, status: 'approved' | 'rejected', reason?: string) => {
+    try {
+      const res = await fetch(`/api/transactions/${txId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status, rejectionReason: reason, approvedBy: 'admin' })
+      });
+      
+      if (res.ok) {
+        fetchTransactions();
+      } else {
+        alert('Failed to update transaction');
+      }
+    } catch (error) {
+      console.error('Failed to update transaction:', error);
+      alert('An error occurred');
     }
   };
 
@@ -1175,14 +1196,15 @@ export default function AdminDashboard() {
                         <TableHead>Customer</TableHead>
                         <TableHead>Product</TableHead>
                         <TableHead>Amount</TableHead>
+                        <TableHead>Receipt</TableHead>
                         <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {transactions.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             No transactions yet
                           </TableCell>
                         </TableRow>
@@ -1204,20 +1226,55 @@ export default function AdminDashboard() {
                             <TableCell className="max-w-[200px] truncate">{tx.productName || '-'}</TableCell>
                             <TableCell className="font-bold text-primary">{tx.amount} ETB</TableCell>
                             <TableCell>
+                              {tx.receiptUrl ? (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  onClick={() => setViewingReceipt(tx.receiptUrl || null)}
+                                  className="text-xs"
+                                >
+                                  View Receipt
+                                </Button>
+                              ) : (
+                                <span className="text-xs text-gray-400">No receipt</span>
+                              )}
+                            </TableCell>
+                            <TableCell>
                               <Badge variant={
-                                tx.status === 'success' ? 'default' : 
+                                tx.status === 'approved' ? 'default' : 
                                 tx.status === 'pending' ? 'secondary' : 
                                 'destructive'
                               } className={
-                                tx.status === 'success' ? 'bg-green-600' :
+                                tx.status === 'approved' ? 'bg-green-600' :
                                 tx.status === 'pending' ? 'bg-orange-500' :
                                 'bg-red-600'
                               }>
                                 {tx.status}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-sm text-gray-600">
-                              {new Date(tx.createdAt).toLocaleDateString()}
+                            <TableCell>
+                              {tx.status === 'pending' && (
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleTransactionAction(tx._id, 'approved')}
+                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-7 px-2"
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => {
+                                      const reason = prompt('Rejection reason (optional):');
+                                      handleTransactionAction(tx._id, 'rejected', reason || undefined);
+                                    }}
+                                    className="text-xs h-7 px-2"
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))
@@ -1340,6 +1397,24 @@ export default function AdminDashboard() {
         open={showPaymentDialog}
         onOpenChange={setShowPaymentDialog}
       />
+
+      {/* Receipt Viewer Dialog */}
+      <Dialog open={!!viewingReceipt} onOpenChange={() => setViewingReceipt(null)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Payment Receipt</DialogTitle>
+          </DialogHeader>
+          {viewingReceipt && (
+            <div className="relative w-full h-[600px]">
+              <img 
+                src={viewingReceipt} 
+                alt="Payment Receipt" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Member Dialog */}
       <EditMemberDialog

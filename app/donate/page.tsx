@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Heart, ArrowLeft, Send, Home, Sparkles, Gift, Star, Users } from 'lucide-react';
+import { Heart, Send, Home, Gift, Star, Users, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { DonateForm } from './DonateForm';

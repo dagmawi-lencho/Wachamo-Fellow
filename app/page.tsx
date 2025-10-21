@@ -290,7 +290,7 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                 <div className="absolute bottom-8 left-8 text-white">
                   <p className="text-2xl font-bold">United in Christ</p>
-                  <p className="text-white/80">Building God's Kingdom Together</p>
+                  <p className="text-white/80">Building God&apos;s Kingdom Together</p>
                 </div>
               </div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-gradient-to-br from-[#2ea7df] to-[#f59f45] rounded-3xl opacity-20"></div>

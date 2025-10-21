@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, ArrowLeft, Tag, Plus, Check, Sparkles, Filter, Home } from 'lucide-react';
+import { ShoppingCart, Tag, Plus, Check, Sparkles, Filter, Home, Package, Heart } from 'lucide-react';
 import { cartStore } from '@/lib/cartStore';
 
 interface Product {

@@ -124,8 +124,7 @@ export default function RegisterPage() {
         }
         break;
       case 4:
-        if (!formData.bornAgain || !formData.churchName || !formData.spiritualGift || 
-            !formData.favoriteBibleVerse) {
+        if (!formData.bornAgain || !formData.churchName || !formData.spiritualGift) {
           setError('Please fill all required fields in Spiritual & Personal Section');
           return false;
         }
@@ -682,10 +681,10 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="space-y-3">
-                      <Label htmlFor="favoriteBibleVerse" className="text-base font-bold text-gray-800">Favorite Bible Verse *</Label>
+                      <Label htmlFor="favoriteBibleVerse" className="text-base font-bold text-gray-800">Favorite Bible Verse</Label>
                       <Textarea
                         id="favoriteBibleVerse"
-                        placeholder="e.g., John 3:16 - For God so loved the world..."
+                        placeholder="e.g., John 3:16 - For God so loved the world... (Optional)"
                         value={formData.favoriteBibleVerse}
                         onChange={(e) => updateFormData('favoriteBibleVerse', e.target.value)}
                         className="border-2 focus:border-primary min-h-20"
@@ -823,12 +822,14 @@ export default function RegisterPage() {
                           <p className="text-xs text-gray-500 uppercase tracking-wide">Spiritual Gift</p>
                           <p className="font-semibold text-gray-900">{formData.spiritualGift}</p>
                         </div>
-                        <div className="md:col-span-2">
-                          <p className="text-xs text-gray-500 uppercase tracking-wide">Favorite Bible Verse</p>
-                          <p className="font-medium text-gray-900 italic bg-white/50 p-3 rounded-lg border border-primary/10">
-                            &ldquo;{formData.favoriteBibleVerse}&rdquo;
-                          </p>
-                        </div>
+                        {formData.favoriteBibleVerse && (
+                          <div className="md:col-span-2">
+                            <p className="text-xs text-gray-500 uppercase tracking-wide">Favorite Bible Verse</p>
+                            <p className="font-medium text-gray-900 italic bg-white/50 p-3 rounded-lg border border-primary/10">
+                              &ldquo;{formData.favoriteBibleVerse}&rdquo;
+                            </p>
+                          </div>
+                        )}
                         {formData.prayerRequest && (
                           <div className="md:col-span-2">
                             <p className="text-xs text-gray-500 uppercase tracking-wide">Prayer Request</p>

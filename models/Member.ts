@@ -25,7 +25,7 @@ export interface IMember extends Document {
   bornAgain: 'Yes' | 'No';
   churchName: string;
   spiritualGift: string;
-  favoriteBibleVerse: string;
+  favoriteBibleVerse?: string;
   prayerRequest?: string;
   
   // Metadata
@@ -62,7 +62,7 @@ const MemberSchema: Schema = new Schema({
   bornAgain: { type: String, enum: ['Yes', 'No'], required: true },
   churchName: { type: String, required: true },
   spiritualGift: { type: String, required: true },
-  favoriteBibleVerse: { type: String, required: true },
+  favoriteBibleVerse: { type: String, required: false },
   prayerRequest: { type: String },
 }, {
   timestamps: true

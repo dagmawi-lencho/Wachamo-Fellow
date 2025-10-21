@@ -3,6 +3,8 @@ import cloudinary from '@/lib/cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Starting receipt upload...');
+    
     const formData = await request.formData();
     const file = formData.get('receipt') as File;
     
@@ -10,23 +12,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
     
-    // Convert file to buffer
+    console.log('File received:', file.name, file.size, 'bytes');
+    
+    // Convert file to base64 for Cloudinary
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString('base64');
+    const dataURI = `data:${file.type};base64,${base64}`;
     
-    // Upload to Cloudinary
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: 'wachamo-fellowship/receipts',
-          resource_type: 'image'
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result as { secure_url: string });
-        }
-      ).end(buffer);
+    console.log('Uploading to Cloudinary...');
+    
+    // Upload to Cloudinary using upload (not upload_stream)
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: 'wachamo-fellowship/receipts',
+      resource_type: 'image',
+      timeout: 60000 // 60 seconds timeout
     });
+    
+    console.log('Upload successful:', result.secure_url);
     
     return NextResponse.json({
       success: true,
@@ -35,7 +38,10 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error('Upload error:', error);
     const message = error instanceof Error ? error.message : 'Failed to upload receipt';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ 
+      error: message,
+      details: error instanceof Error ? error.stack : String(error)
+    }, { status: 500 });
   }
 }
 

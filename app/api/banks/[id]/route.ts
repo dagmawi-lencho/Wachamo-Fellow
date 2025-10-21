@@ -5,14 +5,15 @@ import Bank from '@/models/Bank';
 // PUT - Update bank
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     const data = await request.json();
+    const { id } = await params;
     
     const bank = await Bank.findByIdAndUpdate(
-      params.id,
+      id,
       {
         bankName: data.bankName,
         accountNumber: data.accountNumber,
@@ -42,14 +43,15 @@ export async function PUT(
 // DELETE - Delete bank
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
+    const { id } = await params;
     
     // Soft delete by setting isActive to false
     const bank = await Bank.findByIdAndUpdate(
-      params.id,
+      id,
       { isActive: false },
       { new: true }
     );

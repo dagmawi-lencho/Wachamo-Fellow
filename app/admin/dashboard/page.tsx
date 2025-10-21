@@ -60,6 +60,12 @@ interface Stats {
     bornAgainNo: number;
     attendingBibleStudy: number;
     notAttendingBibleStudy: number;
+    totalRevenue?: number;
+    totalDonations?: number;
+    totalSales?: number;
+    pendingTransactions?: number;
+    approvedTransactions?: number;
+    rejectedTransactions?: number;
   };
   charts: {
     membersByCollege: Array<{ _id: string; count: number }>;
@@ -80,6 +86,7 @@ export default function AdminDashboard() {
   const [members, setMembers] = useState<Member[]>([]);
   const [transactions, setTransactions] = useState<Array<{
     _id: string;
+    orderNumber?: string;
     type: string;
     firstName: string;
     lastName: string;
@@ -122,7 +129,7 @@ export default function AdminDashboard() {
     bankName: string;
     accountNumber: string;
     accountHolderName: string;
-  } | null>(null);
+  } | undefined>(undefined);
   const [banks, setBanks] = useState<Array<{
     _id: string;
     bankName: string;
@@ -1517,7 +1524,7 @@ export default function AdminDashboard() {
                 </div>
                 <Button 
                   onClick={() => {
-                    setBankToEdit(null);
+                    setBankToEdit(undefined);
                     setShowBankDialog(true);
                   }}
                   className="gradient-primary text-white"

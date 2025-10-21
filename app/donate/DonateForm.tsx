@@ -122,15 +122,15 @@ export function DonateForm() {
   };
 
   return (
-    <Card className="bg-white/90 backdrop-blur-xl border border-primary/20">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Heart className="w-5 h-5 text-primary" />
+    <Card className="bg-white border-2 border-gray-100 shadow-xl rounded-3xl">
+      <CardHeader className="bg-gradient-to-r from-red-50 to-pink-50">
+        <CardTitle className="flex items-center gap-2 text-2xl">
+          <Heart className="w-6 h-6 text-red-500" />
           Make a Donation
         </CardTitle>
         <CardDescription>Transfer to our bank account and submit your receipt</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <form onSubmit={handleDonate} className="space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="amount">Amount (ETB) *</Label>
@@ -270,16 +270,19 @@ export function DonateForm() {
           <Button
             type="submit"
             disabled={processing}
-            className="w-full h-14 gradient-secondary text-white font-bold text-lg"
+            className="w-full h-14 bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white font-bold text-lg rounded-2xl hover:shadow-xl hover:scale-105 transition-all"
           >
             {processing ? (
               <span className="animate-pulse">Uploading...</span>
             ) : (
-              `Submit Donation ${formData.amount || '___'} ETB`
+              <>
+                <Heart className="w-5 h-5 mr-2" />
+                Submit Donation {formData.amount || '___'} ETB
+              </>
             )}
           </Button>
 
-          <p className="text-xs text-center text-gray-600">
+          <p className="text-xs text-center text-gray-600 bg-green-50 py-3 px-4 rounded-xl border border-green-200">
             ✅ Admin will verify your payment within 24 hours
           </p>
         </form>

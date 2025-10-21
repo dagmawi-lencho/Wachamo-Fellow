@@ -120,3 +120,36 @@ export async function PUT(
   }
 }
 
+// Delete transaction
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    
+    // Get the transaction first to check if we need to restore stock
+    const transaction = await Transaction.findById(id);
+    
+    if (!transaction) {
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+    }
+    
+    // Restore stock if it was reserved and transaction is not approved
+    if (transaction.stockReserved && transaction.status !== 'approved') {
+      await restoreStock(transaction);
+    }
+    
+    // Delete the transaction
+    await Transaction.findByIdAndDelete(id);
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Transaction deleted successfully'
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to delete transaction';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}

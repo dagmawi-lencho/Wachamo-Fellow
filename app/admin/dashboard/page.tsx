@@ -153,6 +153,8 @@ export default function AdminDashboard() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [transactionPage, setTransactionPage] = useState(1);
   const [transactionsPerPage, setTransactionsPerPage] = useState(10);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [selectedTransactions, setSelectedTransactions] = useState<string[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -327,6 +329,82 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleBulkDeleteMembers = async () => {
+    if (selectedMembers.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedMembers.length} member(s)? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const deletePromises = selectedMembers.map(id =>
+        fetch(`/api/members/${id}`, { method: 'DELETE' })
+      );
+      
+      await Promise.all(deletePromises);
+      
+      fetchMembers();
+      fetchStats();
+      setSelectedMembers([]);
+      alert(`Successfully deleted ${selectedMembers.length} member(s)`);
+    } catch (error) {
+      console.error('Failed to bulk delete members:', error);
+      alert('Failed to delete some members. Please try again.');
+    }
+  };
+
+  const handleBulkDeleteTransactions = async () => {
+    if (selectedTransactions.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedTransactions.length} transaction(s)? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const deletePromises = selectedTransactions.map(id =>
+        fetch(`/api/transactions/${id}`, { method: 'DELETE' })
+      );
+      
+      await Promise.all(deletePromises);
+      
+      fetchTransactions();
+      fetchStats();
+      setSelectedTransactions([]);
+      alert(`Successfully deleted ${selectedTransactions.length} transaction(s)`);
+    } catch (error) {
+      console.error('Failed to bulk delete transactions:', error);
+      alert('Failed to delete some transactions. Please try again.');
+    }
+  };
+
+  const toggleMemberSelection = (id: string) => {
+    setSelectedMembers(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAllMembers = () => {
+    if (selectedMembers.length === paginatedMembers.length) {
+      setSelectedMembers([]);
+    } else {
+      setSelectedMembers(paginatedMembers.map(m => m._id));
+    }
+  };
+
+  const toggleTransactionSelection = (id: string) => {
+    setSelectedTransactions(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAllTransactions = () => {
+    if (selectedTransactions.length === paginatedTransactions.length) {
+      setSelectedTransactions([]);
+    } else {
+      setSelectedTransactions(paginatedTransactions.map(t => t._id));
+    }
+  };
+
   const handleSaveRegistrationSettings = async () => {
     try {
       const response = await fetch('/api/registration-status', {
@@ -424,6 +502,15 @@ export default function AdminDashboard() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filters]);
+
+  // Clear selections when page changes
+  useEffect(() => {
+    setSelectedMembers([]);
+  }, [currentPage]);
+
+  useEffect(() => {
+    setSelectedTransactions([]);
+  }, [transactionPage]);
 
   const exportToExcel = () => {
     // Dynamic import to avoid build issues
@@ -800,6 +887,16 @@ export default function AdminDashboard() {
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-3 flex-wrap">
+                      {selectedMembers.length > 0 && (
+                        <Button
+                          variant="destructive"
+                          onClick={handleBulkDeleteMembers}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete ({selectedMembers.length})
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         onClick={() => setShowFilters(!showFilters)}
@@ -1091,6 +1188,14 @@ export default function AdminDashboard() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-primary/5">
+                        <TableHead className="w-12">
+                          <input
+                            type="checkbox"
+                            checked={paginatedMembers.length > 0 && selectedMembers.length === paginatedMembers.length}
+                            onChange={toggleAllMembers}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </TableHead>
                         <TableHead className="w-16">No.</TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Student ID</TableHead>
@@ -1103,13 +1208,21 @@ export default function AdminDashboard() {
                     <TableBody>
                       {paginatedMembers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             No members found matching your criteria
                           </TableCell>
                         </TableRow>
                       ) : (
                         paginatedMembers.map((member, index) => (
                         <TableRow key={member._id} className="hover:bg-primary/5">
+                          <TableCell>
+                            <input
+                              type="checkbox"
+                              checked={selectedMembers.includes(member._id)}
+                              onChange={() => toggleMemberSelection(member._id)}
+                              className="w-4 h-4 cursor-pointer"
+                            />
+                          </TableCell>
                           <TableCell className="font-semibold text-gray-600">{startIndex + index + 1}</TableCell>
                           <TableCell className="font-medium">{member.fullName}</TableCell>
                           <TableCell>{member.studentId}</TableCell>
@@ -1310,14 +1423,26 @@ export default function AdminDashboard() {
                       All payments and donations • Showing {transactionStartIndex + 1}-{Math.min(transactionEndIndex, transactions.length)} of {transactions.length}
                     </CardDescription>
                   </div>
-                  <Button
-                    onClick={exportTransactions}
-                    className="gradient-secondary text-white"
-                    disabled={transactions.length === 0}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Excel
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    {selectedTransactions.length > 0 && (
+                      <Button
+                        variant="destructive"
+                        onClick={handleBulkDeleteTransactions}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete ({selectedTransactions.length})
+                      </Button>
+                    )}
+                    <Button
+                      onClick={exportTransactions}
+                      className="gradient-secondary text-white"
+                      disabled={transactions.length === 0}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Export Excel
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -1369,6 +1494,14 @@ export default function AdminDashboard() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-primary/5">
+                        <TableHead className="w-12">
+                          <input
+                            type="checkbox"
+                            checked={paginatedTransactions.length > 0 && selectedTransactions.length === paginatedTransactions.length}
+                            onChange={toggleAllTransactions}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </TableHead>
                         <TableHead className="w-12">No.</TableHead>
                         <TableHead className="min-w-[100px]">Order #</TableHead>
                         <TableHead className="min-w-[80px]">Type</TableHead>
@@ -1383,13 +1516,21 @@ export default function AdminDashboard() {
                     <TableBody>
                       {transactions.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
                             No transactions yet
                           </TableCell>
                         </TableRow>
                       ) : (
                         paginatedTransactions.map((tx, index) => (
                           <TableRow key={tx._id} className="hover:bg-primary/5">
+                            <TableCell>
+                              <input
+                                type="checkbox"
+                                checked={selectedTransactions.includes(tx._id)}
+                                onChange={() => toggleTransactionSelection(tx._id)}
+                                className="w-4 h-4 cursor-pointer"
+                              />
+                            </TableCell>
                             <TableCell className="font-semibold text-gray-600">{transactionStartIndex + index + 1}</TableCell>
                             <TableCell>
                               <span className="font-mono font-bold text-primary text-sm">

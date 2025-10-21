@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import Transaction from '@/models/Transaction';
+import Transaction, { ITransaction } from '@/models/Transaction';
 import Product from '@/models/Product';
 
 // Helper function to restore stock
-async function restoreStock(transaction: any) {
+async function restoreStock(transaction: ITransaction) {
   if (transaction.type === 'product' && transaction.stockReserved && transaction.orderDetails && Array.isArray(transaction.orderDetails)) {
     try {
       for (const item of transaction.orderDetails) {

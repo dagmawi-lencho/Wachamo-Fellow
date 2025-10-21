@@ -151,6 +151,8 @@ export default function AdminDashboard() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [transactionPage, setTransactionPage] = useState(1);
+  const [transactionsPerPage, setTransactionsPerPage] = useState(10);
 
   useEffect(() => {
     checkAuth();
@@ -406,11 +408,17 @@ export default function AdminDashboard() {
 
   const hasActiveFilters = Object.values(filters).some(value => value !== '' && value !== 'all');
 
-  // Pagination
+  // Pagination for Members
   const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
+
+  // Pagination for Transactions
+  const totalTransactionPages = Math.ceil(transactions.length / transactionsPerPage);
+  const transactionStartIndex = (transactionPage - 1) * transactionsPerPage;
+  const transactionEndIndex = transactionStartIndex + transactionsPerPage;
+  const paginatedTransactions = transactions.slice(transactionStartIndex, transactionEndIndex);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -1298,7 +1306,9 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Transaction History</CardTitle>
-                    <CardDescription>All payments and donations • {transactions.length} total</CardDescription>
+                    <CardDescription>
+                      All payments and donations • Showing {transactionStartIndex + 1}-{Math.min(transactionEndIndex, transactions.length)} of {transactions.length}
+                    </CardDescription>
                   </div>
                   <Button
                     onClick={exportTransactions}
@@ -1311,6 +1321,50 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* Pagination Controls - Top */}
+                <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm">Show:</Label>
+                    <Select value={transactionsPerPage.toString()} onValueChange={(val) => {
+                      setTransactionsPerPage(parseInt(val));
+                      setTransactionPage(1);
+                    }}>
+                      <SelectTrigger className="w-20 h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="100">100</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">entries per page</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(prev => Math.max(1, prev - 1))}
+                      disabled={transactionPage === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Page {transactionPage} of {totalTransactionPages || 1}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(prev => Math.min(totalTransactionPages, prev + 1))}
+                      disabled={transactionPage === totalTransactionPages || totalTransactionPages === 0}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="rounded-lg border overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -1334,9 +1388,9 @@ export default function AdminDashboard() {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        transactions.slice(0, 50).map((tx, index) => (
+                        paginatedTransactions.map((tx, index) => (
                           <TableRow key={tx._id} className="hover:bg-primary/5">
-                            <TableCell className="font-semibold text-gray-600">{index + 1}</TableCell>
+                            <TableCell className="font-semibold text-gray-600">{transactionStartIndex + index + 1}</TableCell>
                             <TableCell>
                               <span className="font-mono font-bold text-primary text-sm">
                                 {tx.orderNumber || 'N/A'}
@@ -1472,6 +1526,77 @@ export default function AdminDashboard() {
                       )}
                     </TableBody>
                   </Table>
+                </div>
+
+                {/* Pagination Controls - Bottom */}
+                <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {transactionStartIndex + 1} to {Math.min(transactionEndIndex, transactions.length)} of {transactions.length} entries
+                  </p>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(1)}
+                      disabled={transactionPage === 1}
+                    >
+                      First
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(prev => Math.max(1, prev - 1))}
+                      disabled={transactionPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    
+                    {/* Page Numbers */}
+                    <div className="flex gap-1">
+                      {Array.from({ length: Math.min(5, totalTransactionPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalTransactionPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (transactionPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (transactionPage >= totalTransactionPages - 2) {
+                          pageNum = totalTransactionPages - 4 + i;
+                        } else {
+                          pageNum = transactionPage - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={transactionPage === pageNum ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => setTransactionPage(pageNum)}
+                            className={transactionPage === pageNum ? 'gradient-primary text-white' : ''}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(prev => Math.min(totalTransactionPages, prev + 1))}
+                      disabled={transactionPage === totalTransactionPages || totalTransactionPages === 0}
+                    >
+                      Next
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTransactionPage(totalTransactionPages)}
+                      disabled={transactionPage === totalTransactionPages || totalTransactionPages === 0}
+                    >
+                      Last
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

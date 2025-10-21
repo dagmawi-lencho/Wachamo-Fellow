@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ShoppingCart, Tag, Plus, Check, Sparkles, Filter, Home, Package, Heart } from 'lucide-react';
+import { ShoppingCart, Tag, Plus, Check, Sparkles, Filter, Home, Package, Heart, ArrowLeft } from 'lucide-react';
 import { cartStore } from '@/lib/cartStore';
 
 interface Product {

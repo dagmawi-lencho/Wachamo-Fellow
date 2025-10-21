@@ -246,9 +246,10 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status, rejectionReason: reason, approvedBy: 'admin' })
       });
-      
+
       if (res.ok) {
         fetchTransactions();
+        fetchStats(); // Refresh stats to update revenue
       } else {
         alert('Failed to update transaction');
       }
@@ -633,6 +634,72 @@ export default function AdminDashboard() {
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
                       Believers
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Revenue Statistics Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Card className="border-2 border-green-500/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                    <CreditCard className="w-5 h-5 text-green-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-green-600">
+                      {stats?.overview?.totalRevenue || 0} ETB
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      From approved payments
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Card className="border-2 border-primary/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-cyan-50">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Donations</CardTitle>
+                    <Heart className="w-5 h-5 text-primary" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-primary">
+                      {stats?.overview?.totalDonations || 0} ETB
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Generous contributions
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.7 }}
+              >
+                <Card className="border-2 border-secondary/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-orange-50 to-amber-50">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Product Sales</CardTitle>
+                    <ShoppingCart className="w-5 h-5 text-secondary" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-secondary">
+                      {stats?.overview?.totalSales || 0} ETB
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      From shop purchases
                     </p>
                   </CardContent>
                 </Card>

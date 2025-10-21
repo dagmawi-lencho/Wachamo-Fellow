@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Member from '@/models/Member';
+import Transaction from '@/models/Transaction';
 
 export async function GET() {
   try {
@@ -70,6 +71,52 @@ export async function GET() {
       { $sort: { count: -1 } }
     ]);
     
+    // Transaction/Revenue Statistics
+    // Total revenue from APPROVED transactions only
+    const approvedTransactions = await Transaction.aggregate([
+      { $match: { status: 'approved' } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: '$amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Donations revenue (approved only)
+    const donationRevenue = await Transaction.aggregate([
+      { $match: { status: 'approved', type: 'donation' } },
+      {
+        $group: {
+          _id: null,
+          totalDonations: { $sum: '$amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Product sales revenue (approved only)
+    const salesRevenue = await Transaction.aggregate([
+      { $match: { status: 'approved', type: 'product' } },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: '$amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Transaction counts by status
+    const pendingCount = await Transaction.countDocuments({ status: 'pending' });
+    const approvedCount = await Transaction.countDocuments({ status: 'approved' });
+    const rejectedCount = await Transaction.countDocuments({ status: 'rejected' });
+
+    const totalRevenue = approvedTransactions[0]?.totalRevenue || 0;
+    const totalDonations = donationRevenue[0]?.totalDonations || 0;
+    const totalSales = salesRevenue[0]?.totalSales || 0;
+    
     return NextResponse.json({
       overview: {
         totalMembers,
@@ -80,7 +127,14 @@ export async function GET() {
         bornAgainYes,
         bornAgainNo,
         attendingBibleStudy,
-        notAttendingBibleStudy
+        notAttendingBibleStudy,
+        // Add revenue stats to overview
+        totalRevenue,
+        totalDonations,
+        totalSales,
+        pendingTransactions: pendingCount,
+        approvedTransactions: approvedCount,
+        rejectedTransactions: rejectedCount
       },
       charts: {
         membersByCollege,

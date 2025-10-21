@@ -126,7 +126,7 @@ export default function CheckoutPage() {
       if (data.success) {
         // Clear cart and redirect to success page
         cartStore.clearCart();
-        router.push(`/payment/success?tx_ref=${data.txRef}&order_number=${data.orderNumber}&status=pending`);
+        router.push(`/payment/success?tx_ref=${data.txRef}&order_number=${data.orderNumber}&status=pending&type=product`);
       } else {
         alert(data.error || 'Failed to process checkout');
       }

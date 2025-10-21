@@ -108,8 +108,8 @@ export function DonateForm() {
       const data = await response.json();
 
       if (data.success) {
-        // Redirect to success page with order number
-        window.location.href = `/payment/success?tx_ref=${data.txRef}&order_number=${data.orderNumber}&status=pending`;
+        // Redirect to success page with order number and type
+        window.location.href = `/payment/success?tx_ref=${data.txRef}&order_number=${data.orderNumber}&status=pending&type=donation`;
       } else {
         alert(data.error || 'Failed to submit donation');
       }

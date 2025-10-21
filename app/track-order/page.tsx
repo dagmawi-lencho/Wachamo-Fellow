@@ -497,7 +497,7 @@ export default function TrackOrderPage() {
                   <li>Enter your <strong>10-digit order number</strong> (starts with WCU)</li>
                   <li>Enter your <strong>student ID</strong> used during purchase</li>
                   <li>Click <strong>&ldquo;Track Order&rdquo;</strong> to view your order status</li>
-                  <li>You can track orders from both the shop and donations</li>
+                  <li>Track your shop orders and check their verification status</li>
                 </ol>
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm">
                   <p className="text-gray-700">

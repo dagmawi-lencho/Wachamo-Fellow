@@ -15,14 +15,20 @@ export default function PaymentSuccessPage() {
   const [verified, setVerified] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [orderNumber, setOrderNumber] = useState<string>('');
+  const [type, setType] = useState<string>('');
   
   useEffect(() => {
     const txRef = searchParams.get('tx_ref');
     const statusParam = searchParams.get('status');
     const orderNum = searchParams.get('order_number');
+    const typeParam = searchParams.get('type');
     
     if (orderNum) {
       setOrderNumber(orderNum);
+    }
+    
+    if (typeParam) {
+      setType(typeParam);
     }
     
     // If status is pending (manual payment), skip verification
@@ -72,14 +78,20 @@ export default function PaymentSuccessPage() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
                   <span className="text-4xl">⏳</span>
                 </div>
-                <CardTitle className="text-yellow-600">Order Submitted Successfully!</CardTitle>
+                <CardTitle className="text-yellow-600">
+                  {type === 'donation' ? 'Donation Submitted Successfully!' : 'Order Submitted Successfully!'}
+                </CardTitle>
                 <CardDescription>
-                  Your order has been received and is pending admin verification. 
-                  You will be notified within 24 hours. Thank you for your patience!
+                  {type === 'donation' 
+                    ? 'Your donation has been received and is pending admin verification. You will be notified within 24 hours. Thank you for your generosity!' 
+                    : 'Your order has been received and is pending admin verification. You will be notified within 24 hours. Thank you for your patience!'
+                  }
                 </CardDescription>
                 {orderNumber && (
                   <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-2 border-primary/20">
-                    <p className="text-xs text-gray-600 mb-1">Order Number</p>
+                    <p className="text-xs text-gray-600 mb-1">
+                      {type === 'donation' ? 'Reference Number' : 'Order Number'}
+                    </p>
                     <p className="text-2xl font-bold text-primary font-mono tracking-wider">{orderNumber}</p>
                     <p className="text-xs text-gray-600 mt-2">Please save this number for reference</p>
                   </div>
@@ -107,7 +119,7 @@ export default function PaymentSuccessPage() {
               &ldquo;God loves a cheerful giver.&rdquo; - 2 Corinthians 9:7
             </p>
             
-            {orderNumber && status === 'pending' && (
+            {orderNumber && status === 'pending' && type !== 'donation' && (
               <div className="p-3 bg-blue-50 rounded-lg text-sm text-center">
                 <p className="text-gray-700">
                   💡 Use your order number to track your order status anytime!
@@ -115,7 +127,7 @@ export default function PaymentSuccessPage() {
               </div>
             )}
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className={`grid grid-cols-1 ${type === 'donation' ? 'sm:grid-cols-2' : 'sm:grid-cols-3'} gap-3`}>
               <Button onClick={() => router.push('/')} variant="outline" className="w-full">
                 <Home className="w-4 h-4 mr-2" />
                 Home
@@ -124,7 +136,7 @@ export default function PaymentSuccessPage() {
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Shop
               </Button>
-              {orderNumber && (
+              {orderNumber && type !== 'donation' && (
                 <Button 
                   onClick={() => router.push('/track-order')} 
                   className="w-full gradient-secondary text-white"

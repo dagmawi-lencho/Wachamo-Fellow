@@ -258,12 +258,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleTransactionAction = async (txId: string, status: 'approved' | 'rejected', reason?: string) => {
+  const handleTransactionAction = async (txId: string, status: 'approved' | 'rejected' | 'pending', reason?: string) => {
     try {
       const res = await fetch(`/api/transactions/${txId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, rejectionReason: reason, approvedBy: 'admin' })
+        body: JSON.stringify({ status, rejectionReason: reason, approvedBy: status === 'approved' ? 'admin' : undefined })
       });
 
       if (res.ok) {
@@ -1402,6 +1402,61 @@ export default function AdminDashboard() {
                                     className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
                                   >
                                     ✗ Reject
+                                  </Button>
+                                </div>
+                              ) : tx.status === 'approved' ? (
+                                <div className="flex gap-2 flex-nowrap">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      if (confirm('Are you sure you want to reject this approved transaction?')) {
+                                        const reason = prompt('Rejection reason:');
+                                        if (reason) {
+                                          handleTransactionAction(tx._id, 'rejected', reason);
+                                        }
+                                      }
+                                    }}
+                                    className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
+                                  >
+                                    ✗ Reject
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      if (confirm('Revert this transaction back to pending status?')) {
+                                        handleTransactionAction(tx._id, 'pending');
+                                      }
+                                    }}
+                                    className="border-orange-500 text-orange-600 hover:bg-orange-50 text-xs h-8 px-3 whitespace-nowrap"
+                                  >
+                                    ↺ Undo
+                                  </Button>
+                                </div>
+                              ) : tx.status === 'rejected' ? (
+                                <div className="flex gap-2 flex-nowrap">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      if (confirm('Are you sure you want to approve this rejected transaction?')) {
+                                        handleTransactionAction(tx._id, 'approved');
+                                      }
+                                    }}
+                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-3 whitespace-nowrap"
+                                  >
+                                    ✓ Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      if (confirm('Revert this transaction back to pending status?')) {
+                                        handleTransactionAction(tx._id, 'pending');
+                                      }
+                                    }}
+                                    className="border-orange-500 text-orange-600 hover:bg-orange-50 text-xs h-8 px-3 whitespace-nowrap"
+                                  >
+                                    ↺ Undo
                                   </Button>
                                 </div>
                               ) : (

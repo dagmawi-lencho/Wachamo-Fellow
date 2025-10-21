@@ -36,6 +36,7 @@ import {
 import { EditMemberDialog } from '@/components/EditMemberDialog';
 import { AdminManagementDialog } from '@/components/AdminManagementDialog';
 import { PaymentSettingsDialog } from '@/components/PaymentSettingsDialog';
+import { BankManagementDialog } from '@/components/BankManagementDialog';
 import { Label } from '@/components/ui/label';
 import { colleges } from '@/lib/academicData';
 import { fellowshipTeams } from '@/lib/fellowshipTeams';
@@ -114,6 +115,9 @@ export default function AdminDashboard() {
   const [showSettingsDialog, setShowSettingsDialog] = useState(false);
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [showBankDialog, setShowBankDialog] = useState(false);
+  const [bankToEdit, setBankToEdit] = useState<any>(null);
+  const [banks, setBanks] = useState<any[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     fellowshipTeam: 'all',
@@ -143,11 +147,15 @@ export default function AdminDashboard() {
         fetchMembers();
         fetchRegistrationSettings();
         fetchTransactions();
+        fetchBanks();
       } else {
-        router.push('/admin/login');
+        // Token is invalid/expired - server has cleared the cookie
+        // Force a hard redirect to login page with session expired message
+        window.location.href = '/admin/login?session=expired';
       }
     } catch {
-      router.push('/admin/login');
+      // Network error or other issue - redirect to login
+      window.location.href = '/admin/login';
     } finally {
       setIsLoading(false);
     }
@@ -190,9 +198,12 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-      router.push('/admin/login');
+      // Use hard redirect to ensure all state is cleared
+      window.location.href = '/admin/login';
     } catch (error) {
       console.error('Logout failed:', error);
+      // Redirect anyway to be safe
+      window.location.href = '/admin/login';
     }
   };
 
@@ -204,6 +215,27 @@ export default function AdminDashboard() {
       setTransactionStats(data.stats || null);
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
+    }
+  };
+
+  const fetchBanks = async () => {
+    try {
+      const response = await fetch('/api/banks');
+      const data = await response.json();
+      setBanks(data || []);
+    } catch (error) {
+      console.error('Failed to fetch banks:', error);
+    }
+  };
+
+  const handleDeleteBank = async (bankId: string) => {
+    if (!confirm('Are you sure you want to delete this bank account?')) return;
+    
+    try {
+      await fetch(`/api/banks/${bankId}`, { method: 'DELETE' });
+      fetchBanks();
+    } catch (error) {
+      console.error('Failed to delete bank:', error);
     }
   };
 
@@ -231,6 +263,7 @@ export default function AdminDashboard() {
       const worksheet = XLSX.utils.json_to_sheet(
         transactions.map((tx, index) => ({
           'No.': index + 1,
+          'Order Number': tx.orderNumber || 'N/A',
           'Type': tx.type === 'donation' ? 'Donation' : 'Product Sale',
           'Amount (ETB)': tx.amount,
           'Customer Name': `${tx.firstName} ${tx.lastName}`,
@@ -494,7 +527,7 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 lg:w-[800px]">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 lg:w-[1000px]">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -510,6 +543,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">Analytics</span>
+            </TabsTrigger>
+            <TabsTrigger value="banks" className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4" />
+              <span className="hidden sm:inline">Banks</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1192,6 +1229,7 @@ export default function AdminDashboard() {
                     <TableHeader>
                       <TableRow className="bg-primary/5">
                         <TableHead className="w-12">No.</TableHead>
+                        <TableHead>Order #</TableHead>
                         <TableHead>Type</TableHead>
                         <TableHead>Customer</TableHead>
                         <TableHead>Product</TableHead>
@@ -1204,7 +1242,7 @@ export default function AdminDashboard() {
                     <TableBody>
                       {transactions.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                             No transactions yet
                           </TableCell>
                         </TableRow>
@@ -1212,6 +1250,11 @@ export default function AdminDashboard() {
                         transactions.slice(0, 50).map((tx, index) => (
                           <TableRow key={tx._id} className="hover:bg-primary/5">
                             <TableCell className="font-semibold text-gray-600">{index + 1}</TableCell>
+                            <TableCell>
+                              <span className="font-mono font-bold text-primary text-sm">
+                                {tx.orderNumber || 'N/A'}
+                              </span>
+                            </TableCell>
                             <TableCell>
                               <Badge className={tx.type === 'donation' ? 'gradient-primary text-white' : 'gradient-secondary text-white'}>
                                 {tx.type === 'donation' ? 'Donation' : 'Sale'}
@@ -1383,8 +1426,85 @@ export default function AdminDashboard() {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Banks Tab */}
+          <TabsContent value="banks" className="space-y-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Bank Accounts Management</CardTitle>
+                  <CardDescription>Manage fellowship bank accounts for donations and payments</CardDescription>
+                </div>
+                <Button 
+                  onClick={() => {
+                    setBankToEdit(null);
+                    setShowBankDialog(true);
+                  }}
+                  className="gradient-primary text-white"
+                >
+                  + Add Bank
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Bank Name</TableHead>
+                      <TableHead>Account Number</TableHead>
+                      <TableHead>Account Holder</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {banks.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                          No bank accounts added yet. Click "Add Bank" to get started.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      banks.map((bank) => (
+                        <TableRow key={bank._id}>
+                          <TableCell className="font-semibold">{bank.bankName}</TableCell>
+                          <TableCell className="font-mono">{bank.accountNumber}</TableCell>
+                          <TableCell>{bank.accountHolderName}</TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setBankToEdit(bank);
+                                setShowBankDialog(true);
+                              }}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDeleteBank(bank._id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* Bank Management Dialog */}
+      <BankManagementDialog
+        bank={bankToEdit}
+        open={showBankDialog}
+        onOpenChange={setShowBankDialog}
+        onSave={fetchBanks}
+      />
 
       {/* Admin Management Dialog */}
       <AdminManagementDialog

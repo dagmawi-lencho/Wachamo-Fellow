@@ -7,11 +7,13 @@ export function middleware(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname === '/admin/login';
 
   // If trying to access admin routes without token, redirect to login
+  // Token validation will be done in the API routes (not in Edge middleware)
   if (isAdminRoute && !isLoginPage && !token) {
     return NextResponse.redirect(new URL('/admin/login', request.url));
   }
 
-  // If already logged in and trying to access login page, redirect to dashboard
+  // If already has token and trying to access login page, redirect to dashboard
+  // The dashboard will validate the token and redirect back if invalid
   if (isLoginPage && token) {
     return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }

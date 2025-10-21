@@ -13,14 +13,33 @@ export default function PaymentSuccessPage() {
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(true);
   const [verified, setVerified] = useState(false);
+  const [status, setStatus] = useState<string>('');
+  const [orderNumber, setOrderNumber] = useState<string>('');
   
   useEffect(() => {
     const txRef = searchParams.get('tx_ref');
+    const statusParam = searchParams.get('status');
+    const orderNum = searchParams.get('order_number');
+    
+    if (orderNum) {
+      setOrderNumber(orderNum);
+    }
+    
+    // If status is pending (manual payment), skip verification
+    if (statusParam === 'pending') {
+      setStatus('pending');
+      setVerified(true);
+      setVerifying(false);
+      return;
+    }
+    
+    // Otherwise, verify payment
     if (txRef) {
       fetch(`/api/payment/verify?tx_ref=${txRef}`)
         .then(res => res.json())
         .then(data => {
           setVerified(data.success);
+          setStatus(data.status || 'success');
         })
         .catch(console.error)
         .finally(() => setVerifying(false));
@@ -47,6 +66,24 @@ export default function PaymentSuccessPage() {
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
                 <CardTitle>Verifying Payment...</CardTitle>
                 <CardDescription>Please wait while we confirm your payment</CardDescription>
+              </>
+            ) : verified && status === 'pending' ? (
+              <>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
+                  <span className="text-4xl">⏳</span>
+                </div>
+                <CardTitle className="text-yellow-600">Order Submitted Successfully!</CardTitle>
+                <CardDescription>
+                  Your order has been received and is pending admin verification. 
+                  You will be notified within 24 hours. Thank you for your patience!
+                </CardDescription>
+                {orderNumber && (
+                  <div className="mt-4 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-2 border-primary/20">
+                    <p className="text-xs text-gray-600 mb-1">Order Number</p>
+                    <p className="text-2xl font-bold text-primary font-mono tracking-wider">{orderNumber}</p>
+                    <p className="text-xs text-gray-600 mt-2">Please save this number for reference</p>
+                  </div>
+                )}
               </>
             ) : verified ? (
               <>

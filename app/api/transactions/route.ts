@@ -13,22 +13,22 @@ export async function GET() {
     // Calculate statistics
     const stats = {
       totalRevenue: await Transaction.aggregate([
-        { $match: { status: 'success' } },
+        { $match: { status: 'approved' } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ]),
       totalDonations: await Transaction.aggregate([
-        { $match: { status: 'success', type: 'donation' } },
+        { $match: { status: 'approved', type: 'donation' } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ]),
       totalSales: await Transaction.aggregate([
-        { $match: { status: 'success', type: 'product' } },
+        { $match: { status: 'approved', type: 'product' } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ]),
-      successCount: await Transaction.countDocuments({ status: 'success' }),
+      successCount: await Transaction.countDocuments({ status: 'approved' }),
       pendingCount: await Transaction.countDocuments({ status: 'pending' }),
-      failedCount: await Transaction.countDocuments({ status: 'failed' }),
+      failedCount: await Transaction.countDocuments({ status: 'rejected' }),
       recentTransactions: await Transaction.aggregate([
-        { $match: { status: 'success' } },
+        { $match: { status: 'approved' } },
         {
           $group: {
             _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },

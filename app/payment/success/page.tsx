@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Home, ShoppingCart } from 'lucide-react';
+import { CheckCircle2, Home, ShoppingCart, Package } from 'lucide-react';
 import Image from 'next/image';
 
 export default function PaymentSuccessPage() {
@@ -107,7 +107,15 @@ export default function PaymentSuccessPage() {
               &ldquo;God loves a cheerful giver.&rdquo; - 2 Corinthians 9:7
             </p>
             
-            <div className="grid grid-cols-2 gap-3">
+            {orderNumber && status === 'pending' && (
+              <div className="p-3 bg-blue-50 rounded-lg text-sm text-center">
+                <p className="text-gray-700">
+                  💡 Use your order number to track your order status anytime!
+                </p>
+              </div>
+            )}
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <Button onClick={() => router.push('/')} variant="outline" className="w-full">
                 <Home className="w-4 h-4 mr-2" />
                 Home
@@ -116,6 +124,15 @@ export default function PaymentSuccessPage() {
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Shop
               </Button>
+              {orderNumber && (
+                <Button 
+                  onClick={() => router.push('/track-order')} 
+                  className="w-full gradient-secondary text-white"
+                >
+                  <Package className="w-4 h-4 mr-2" />
+                  Track
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

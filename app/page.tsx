@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Cross, BookOpen, Users, Heart, ArrowRight, ShoppingCart } from 'lucide-react';
+import { Cross, BookOpen, Users, Heart, ArrowRight, ShoppingCart, Package } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -99,12 +99,12 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
                 </span>
               </Button>
-              {/* Shop & Donate Buttons */}
+              {/* Shop, Donate & Track Buttons */}
               <motion.div 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}
-                className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto"
+                className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto"
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
@@ -123,6 +123,16 @@ export default function Home() {
                   >
                     <Heart className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform animate-pulse" />
                     Donate Now
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    onClick={() => router.push('/track-order')}
+                    className="w-full h-16 text-lg font-bold bg-white/90 backdrop-blur-xl border-2 border-secondary/30 text-secondary hover:bg-secondary hover:text-white hover:border-white shadow-xl hover:shadow-2xl transition-all duration-300 group"
+                  >
+                    <Package className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+                    Track Order
                   </Button>
                 </motion.div>
               </motion.div>

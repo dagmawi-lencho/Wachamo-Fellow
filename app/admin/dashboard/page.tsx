@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   Users, UserPlus, BookOpen, 
   LogOut, Settings, Search,
@@ -116,8 +117,19 @@ export default function AdminDashboard() {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showBankDialog, setShowBankDialog] = useState(false);
-  const [bankToEdit, setBankToEdit] = useState<any>(null);
-  const [banks, setBanks] = useState<any[]>([]);
+  const [bankToEdit, setBankToEdit] = useState<{
+    _id?: string;
+    bankName: string;
+    accountNumber: string;
+    accountHolderName: string;
+  } | null>(null);
+  const [banks, setBanks] = useState<Array<{
+    _id: string;
+    bankName: string;
+    accountNumber: string;
+    accountHolderName: string;
+    isActive: boolean;
+  }>>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     fellowshipTeam: 'all',
@@ -460,11 +472,12 @@ export default function AdminDashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-white p-2 border-2 border-primary">
-                <img 
+              <div className="w-12 h-12 rounded-full bg-white p-2 border-2 border-primary relative">
+                <Image 
                   src="/logo.png" 
                   alt="Wachamo Fellowship Logo" 
-                  className="w-full h-full object-contain"
+                  fill
+                  className="object-contain p-1"
                 />
               </div>
               <div>

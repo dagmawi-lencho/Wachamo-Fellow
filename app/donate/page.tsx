@@ -218,7 +218,7 @@ export default function DonatePage() {
                 <CardContent className="pt-6 space-y-4">
                   <div className="relative h-48 rounded-2xl overflow-hidden mb-4">
                     <Image
-                      src="https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&q=80"
+                      src="/photo_8_2025-10-21_18-33-12.jpg"
                       alt="Giving"
                       fill
                       className="object-cover"

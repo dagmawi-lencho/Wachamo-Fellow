@@ -23,12 +23,12 @@ export default function Home() {
   }, []);
 
   const galleryImages = [
-    'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&q=80', // Group worship
-    'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800&q=80', // Bible study
-    'https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=800&q=80', // Prayer group
-    'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=800&q=80', // Fellowship gathering
-    'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800&q=80', // Community service
-    'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&q=80', // Outdoor fellowship
+    '/photo_1_2025-10-21_18-33-12.jpg',
+    '/photo_2_2025-10-21_18-33-12.jpg',
+    '/photo_3_2025-10-21_18-33-12.jpg',
+    '/photo_4_2025-10-21_18-33-12.jpg',
+    '/photo_5_2025-10-21_18-33-12.jpg',
+    '/photo_6_2025-10-21_18-33-12.jpg',
   ];
 
   const stats = [
@@ -282,7 +282,7 @@ export default function Home() {
             >
               <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=800&q=80"
+                  src="/photo_7_2025-10-21_18-33-12.jpg"
                   alt="Fellowship gathering"
                   fill
                   className="object-cover"
@@ -407,16 +407,6 @@ export default function Home() {
             ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <p className="text-gray-500 italic">
-              * These are placeholder images. They will be replaced with actual fellowship photos.
-            </p>
-          </motion.div>
         </div>
       </section>
 

@@ -1311,19 +1311,19 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="rounded-lg border overflow-hidden">
+                <div className="rounded-lg border overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-primary/5">
                         <TableHead className="w-12">No.</TableHead>
-                        <TableHead>Order #</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Product</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Receipt</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="min-w-[100px]">Order #</TableHead>
+                        <TableHead className="min-w-[80px]">Type</TableHead>
+                        <TableHead className="min-w-[150px]">Customer</TableHead>
+                        <TableHead className="min-w-[120px]">Product</TableHead>
+                        <TableHead className="min-w-[80px]">Amount</TableHead>
+                        <TableHead className="min-w-[100px]">Receipt</TableHead>
+                        <TableHead className="min-w-[80px]">Status</TableHead>
+                        <TableHead className="min-w-[180px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1382,15 +1382,15 @@ export default function AdminDashboard() {
                                 {tx.status}
                               </Badge>
                             </TableCell>
-                            <TableCell>
-                              {tx.status === 'pending' && (
-                                <div className="flex gap-1">
+                            <TableCell className="min-w-[180px]">
+                              {tx.status === 'pending' ? (
+                                <div className="flex gap-2 flex-nowrap">
                                   <Button
                                     size="sm"
                                     onClick={() => handleTransactionAction(tx._id, 'approved')}
-                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-7 px-2"
+                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-3 whitespace-nowrap"
                                   >
-                                    Approve
+                                    ✓ Approve
                                   </Button>
                                   <Button
                                     size="sm"
@@ -1399,11 +1399,13 @@ export default function AdminDashboard() {
                                       const reason = prompt('Rejection reason (optional):');
                                       handleTransactionAction(tx._id, 'rejected', reason || undefined);
                                     }}
-                                    className="text-xs h-7 px-2"
+                                    className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
                                   >
-                                    Reject
+                                    ✗ Reject
                                   </Button>
                                 </div>
+                              ) : (
+                                <span className="text-xs text-gray-500">—</span>
                               )}
                             </TableCell>
                           </TableRow>

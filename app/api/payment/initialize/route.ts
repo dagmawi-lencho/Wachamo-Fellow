@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
+import Product from '@/models/Product';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +35,44 @@ export async function POST(request: NextRequest) {
       existingOrder = await Transaction.findOne({ orderNumber });
     }
     
+    // Calculate expiry time: 24 hours from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+    
+    // If this is a product purchase, reduce stock
+    let stockReserved = false;
+    if (type === 'product' && orderDetails && Array.isArray(orderDetails)) {
+      try {
+        // Reduce stock for each product in the order
+        for (const item of orderDetails) {
+          const product = await Product.findById(item.productId || item._id);
+          
+          if (!product) {
+            return NextResponse.json({ 
+              error: `Product ${item.name} not found` 
+            }, { status: 404 });
+          }
+          
+          // Check if enough stock available
+          if (product.stock < item.quantity) {
+            return NextResponse.json({ 
+              error: `Insufficient stock for ${item.name}. Only ${product.stock} available.` 
+            }, { status: 400 });
+          }
+          
+          // Reduce the stock
+          product.stock -= item.quantity;
+          await product.save();
+        }
+        stockReserved = true;
+      } catch (error) {
+        console.error('Stock reduction error:', error);
+        return NextResponse.json({ 
+          error: 'Failed to reserve stock. Please try again.' 
+        }, { status: 500 });
+      }
+    }
+    
     // Create transaction record (pending admin approval)
     const transaction = await Transaction.create({
       txRef,
@@ -52,7 +91,9 @@ export async function POST(request: NextRequest) {
       productName,
       orderDetails,
       receiptUrl,
-      status: 'pending'
+      status: 'pending',
+      expiresAt,
+      stockReserved
     });
     
     return NextResponse.json({

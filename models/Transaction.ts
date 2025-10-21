@@ -17,10 +17,12 @@ export interface ITransaction extends Document {
   productName?: string;
   orderDetails?: any;
   receiptUrl?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
   rejectionReason?: string;
   approvedBy?: string;
   approvedAt?: Date;
+  expiresAt?: Date;
+  stockReserved: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,10 +44,12 @@ const TransactionSchema: Schema = new Schema({
   productName: { type: String },
   orderDetails: { type: Schema.Types.Mixed },
   receiptUrl: { type: String },
-  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected', 'expired'], default: 'pending' },
   rejectionReason: { type: String },
   approvedBy: { type: String },
   approvedAt: { type: Date },
+  expiresAt: { type: Date },
+  stockReserved: { type: Boolean, default: false },
 }, {
   timestamps: true
 });

@@ -258,7 +258,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleTransactionAction = async (txId: string, status: 'approved' | 'rejected' | 'pending', reason?: string) => {
+  const handleTransactionAction = async (txId: string, status: 'approved' | 'rejected' | 'pending' | 'expired', reason?: string) => {
     try {
       const res = await fetch(`/api/transactions/${txId}`, {
         method: 'PUT',
@@ -1377,6 +1377,7 @@ export default function AdminDashboard() {
                               } className={
                                 tx.status === 'approved' ? 'bg-green-600' :
                                 tx.status === 'pending' ? 'bg-orange-500' :
+                                tx.status === 'expired' ? 'bg-gray-600' :
                                 'bg-red-600'
                               }>
                                 {tx.status}
@@ -1433,12 +1434,15 @@ export default function AdminDashboard() {
                                     ↺ Undo
                                   </Button>
                                 </div>
-                              ) : tx.status === 'rejected' ? (
+                              ) : tx.status === 'rejected' || tx.status === 'expired' ? (
                                 <div className="flex gap-2 flex-nowrap">
                                   <Button
                                     size="sm"
                                     onClick={() => {
-                                      if (confirm('Are you sure you want to approve this rejected transaction?')) {
+                                      const message = tx.status === 'expired' 
+                                        ? 'This order expired. Approve anyway?' 
+                                        : 'Are you sure you want to approve this rejected transaction?';
+                                      if (confirm(message)) {
                                         handleTransactionAction(tx._id, 'approved');
                                       }
                                     }}

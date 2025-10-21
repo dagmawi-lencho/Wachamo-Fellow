@@ -43,3 +43,12 @@ next-env.d.ts
 # IDE
 .vscode
 .idea
+.cursor
+
+# Documentation files (keep only README.md)
+*.md
+!README.md
+
+# Environment variables
+.env.local
+VERCEL_ENVIRONMENT_VARS.txt

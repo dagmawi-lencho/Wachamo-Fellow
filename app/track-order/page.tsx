@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { 
   Package, Search, ArrowLeft, CheckCircle2, Clock, XCircle, 
-  User, Phone, CreditCard, Calendar, FileText, Building2, ShoppingCart 
+  User, CreditCard, Calendar, FileText, ShoppingCart 
 } from 'lucide-react';
 
 interface OrderData {
@@ -27,7 +27,13 @@ interface OrderData {
   accountNumber?: string;
   type: string;
   productName?: string;
-  orderDetails?: any[];
+  orderDetails?: Array<{
+    _id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    imageUrl?: string;
+  }>;
   receiptUrl?: string;
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
@@ -64,7 +70,7 @@ export default function TrackOrderPage() {
       } else {
         setError(data.error || 'Order not found');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to track order. Please try again.');
     } finally {
       setLoading(false);
@@ -304,7 +310,7 @@ export default function TrackOrderPage() {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="space-y-3">
-                    {order.orderDetails.map((item: any, index: number) => (
+                    {order.orderDetails.map((item, index: number) => (
                       <div key={index} className="flex gap-4 p-3 bg-gray-50 rounded-lg">
                         <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg flex items-center justify-center shrink-0">
                           {item.imageUrl ? (
@@ -490,7 +496,7 @@ export default function TrackOrderPage() {
                 <ol className="space-y-2 text-sm text-gray-700 list-decimal list-inside">
                   <li>Enter your <strong>10-digit order number</strong> (starts with WCU)</li>
                   <li>Enter your <strong>student ID</strong> used during purchase</li>
-                  <li>Click <strong>"Track Order"</strong> to view your order status</li>
+                  <li>Click <strong>&ldquo;Track Order&rdquo;</strong> to view your order status</li>
                   <li>You can track orders from both the shop and donations</li>
                 </ol>
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm">

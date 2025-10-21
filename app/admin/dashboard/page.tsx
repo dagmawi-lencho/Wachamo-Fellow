@@ -1526,7 +1526,7 @@ export default function AdminDashboard() {
                     {banks.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={4} className="text-center py-8 text-gray-500">
-                          No bank accounts added yet. Click "Add Bank" to get started.
+                          No bank accounts added yet. Click &ldquo;Add Bank&rdquo; to get started.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -1593,10 +1593,11 @@ export default function AdminDashboard() {
           </DialogHeader>
           {viewingReceipt && (
             <div className="relative w-full h-[600px]">
-              <img 
+              <Image 
                 src={viewingReceipt} 
                 alt="Payment Receipt" 
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
               />
             </div>
           )}

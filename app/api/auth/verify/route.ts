@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
         email: decoded.email
       }
     });
-  } catch (error) {
+  } catch {
     // Token is invalid or expired - clear it and return 401
     const response = NextResponse.json(
       { error: 'Invalid or expired token', shouldLogout: true },

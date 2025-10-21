@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Cross, Lock, Mail, Shield, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
 
 function LoginForm() {
   const router = useRouter();
@@ -81,12 +82,13 @@ function LoginForm() {
               initial={{ rotate: -180, scale: 0 }}
               animate={{ rotate: 0, scale: 1 }}
               transition={{ duration: 0.8, type: 'spring' }}
-              className="mx-auto w-20 h-20 rounded-full bg-white p-2 border-2 border-primary"
+              className="mx-auto w-20 h-20 rounded-full bg-white p-2 border-2 border-primary relative"
             >
-              <img 
+              <Image 
                 src="/logo.png" 
                 alt="Wachamo Fellowship Logo" 
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain p-2"
               />
             </motion.div>
             

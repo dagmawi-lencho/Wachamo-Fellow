@@ -88,7 +88,7 @@ export default function ShopPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
-                  Fellowship Shop
+                  Wachamo Fellowship Shop
                 </h1>
                 <p className="text-xs text-gray-600">Christian Resources & More</p>
               </div>
@@ -357,8 +357,11 @@ export default function ShopPage() {
             </div>
             <h3 className="text-xl font-bold">Wachamo Fellowship</h3>
           </div>
+          <p className="text-gray-400 text-sm mb-2">
+            &copy; 2025/26 Wachamo Fellowship. Built with ❤️ by Dagmawi Lencho
+          </p>
           <p className="text-gray-400 text-sm mb-4">
-            &copy; {new Date().getFullYear()} Wachamo Fellowship BSC Team. Built with ❤️ by Dagmawi Lencho
+            info@wcufellowship.com • +251 916 362 062 • Hosaina, Ambicho
           </p>
           <p className="text-gray-500 italic text-sm">
             &quot;For where two or three gather in my name, there am I with them.&quot; - Matthew 18:20

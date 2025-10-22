@@ -69,7 +69,7 @@ export default function DonatePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
-                  Support the Ministry
+                  Wachamo Fellowship Support
                 </h1>
                 <p className="text-xs text-gray-600">Every gift makes a difference</p>
               </div>
@@ -218,7 +218,7 @@ export default function DonatePage() {
                 <CardContent className="pt-6 space-y-4">
                   <div className="relative h-48 rounded-2xl overflow-hidden mb-4">
                     <Image
-                      src="/photo_8_2025-10-21_18-33-12.jpg"
+                      src="/photo_2_2025-10-22_20-34-24.jpg"
                       alt="Giving"
                       fill
                       className="object-cover"

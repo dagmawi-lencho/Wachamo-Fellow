@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Wachamo Fellowship - Evangelical Students Union",
-  description: "Wachamo University Fellowship BSC Team Registration and Management System",
-  keywords: ["Wachamo University", "Fellowship", "Christian", "Students Union", "BSC Team"],
+  description: "Wachamo University Fellowship Registration and Management System",
+  keywords: ["Wachamo University", "Fellowship", "Christian", "Students Union", "Evangelical"],
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',

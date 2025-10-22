@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { 
   Cross, BookOpen, Users, Heart, ArrowRight, ShoppingCart, Gift, 
-  Star, Sparkles, Award, Mail, Phone, MapPin, ChevronDown
+  Star, Sparkles, Award, Mail, Phone, MapPin, ChevronDown, Package
 } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -23,19 +23,19 @@ export default function Home() {
   }, []);
 
   const galleryImages = [
-    '/photo_1_2025-10-21_18-33-12.jpg',
-    '/photo_2_2025-10-21_18-33-12.jpg',
-    '/photo_3_2025-10-21_18-33-12.jpg',
-    '/photo_4_2025-10-21_18-33-12.jpg',
-    '/photo_5_2025-10-21_18-33-12.jpg',
-    '/photo_6_2025-10-21_18-33-12.jpg',
+    '/photo_1_2025-10-22_20-34-24.jpg',
+    '/photo_2_2025-10-22_20-34-24.jpg',
+    '/photo_3_2025-10-22_20-34-24.jpg',
+    '/photo_4_2025-10-22_20-34-24.jpg',
+    '/photo_5_2025-10-22_20-34-24.jpg',
+    '/photo_6_2025-10-22_20-34-24.jpg',
   ];
 
   const stats = [
-    { icon: Users, value: '500+', label: 'Active Members' },
+    { icon: Users, value: '5000+', label: 'Active Members' },
     { icon: BookOpen, value: '20+', label: 'Bible Study Groups' },
     { icon: Heart, value: '50+', label: 'Weekly Gatherings' },
-    { icon: Award, value: '10+', label: 'Fellowship Teams' },
+    { icon: Award, value: '15+', label: 'Fellowship Teams' },
   ];
 
   const features = [
@@ -83,7 +83,6 @@ export default function Home() {
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
                   Wachamo Fellowship
                 </h1>
-                <p className="text-xs text-gray-600">BSC Team</p>
               </div>
             </div>
             
@@ -100,17 +99,18 @@ export default function Home() {
                 Shop
               </Button>
               <Button
+                variant="outline"
+                onClick={() => router.push('/track-order')}
+                className="border-2 border-[#f59f45] text-[#f59f45] hover:bg-[#f59f45] hover:text-white"
+              >
+                <Package className="w-4 h-4 mr-2" />
+                Track Order
+              </Button>
+              <Button
                 onClick={() => router.push('/register')}
                 className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white hover:shadow-lg hover:scale-105 transition-all"
               >
                 Join Us
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => router.push('/admin/login')}
-                className="text-gray-600"
-              >
-                Admin
               </Button>
             </div>
 
@@ -267,7 +267,7 @@ export default function Home() {
               Who <span className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">We Are</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              We are the Wachamo University Evangelical Students Union Fellowship BSC Team - 
+              We are the Wachamo University Evangelical Students Union Fellowship - 
               a passionate community dedicated to glorifying God through worship, discipleship, 
               and service.
             </p>
@@ -282,7 +282,7 @@ export default function Home() {
             >
               <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/photo_7_2025-10-21_18-33-12.jpg"
+                  src="/photo_1_2025-10-22_20-34-24.jpg"
                   alt="Fellowship gathering"
                   fill
                   className="object-cover"
@@ -406,7 +406,6 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -482,7 +481,7 @@ export default function Home() {
               Ready to Begin Your Journey?
             </h2>
             <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto">
-              Join hundreds of students discovering purpose, building faith, and making an eternal impact
+              Join thousands of students discovering purpose, building faith, and making an eternal impact
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button
@@ -518,7 +517,6 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="font-bold text-lg">Wachamo Fellowship</h3>
-                  <p className="text-sm text-gray-400">BSC Team</p>
                 </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -550,24 +548,26 @@ export default function Home() {
               <ul className="space-y-3 text-gray-400">
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  <a href="mailto:contact@wachamo-fellow.org" className="hover:text-white transition-colors text-sm">
-                    contact@fellowship.org
+                  <a href="mailto:info@wcufellowship.com" className="hover:text-white transition-colors text-sm">
+                    info@wcufellowship.com
                   </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  <span className="text-sm">+251 XXX XXX XXX</span>
+                  <a href="tel:+251916362062" className="hover:text-white transition-colors text-sm">
+                    +251 916 362 062
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  <span className="text-sm">Wachamo University</span>
+                  <span className="text-sm">Hosaina, Ambicho</span>
                 </li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; {new Date().getFullYear()} Wachamo Fellowship BSC Team. Built with ❤️ by Dagmawi Lencho</p>
+            <p>&copy; 2025/26 Wachamo Fellowship. Built with ❤️ by Dagmawi Lencho</p>
             <p className="mt-2 italic">&quot;For where two or three gather in my name, there am I with them.&quot; - Matthew 18:20</p>
           </div>
         </div>
@@ -575,3 +575,4 @@ export default function Home() {
     </div>
   );
 }
+

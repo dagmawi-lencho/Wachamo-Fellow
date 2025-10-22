@@ -17,6 +17,8 @@ import {
   Sparkles, AlertCircle 
 } from 'lucide-react';
 import { colleges, getDepartmentsByCollege } from '@/lib/academicData';
+import { fellowshipTeams, leadershipRoles, spiritualGifts } from '@/lib/fellowshipTeams';
+import { churches } from '@/lib/churchList';
 import { SearchableSelect } from '@/components/SearchableSelect';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Image from 'next/image';
@@ -563,38 +565,38 @@ export default function RegisterPage() {
                         value={formData.fellowshipTeam} 
                         onValueChange={(val) => updateFormData('fellowshipTeam', val)}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-14 text-base">
                           <SelectValue placeholder="Select your fellowship team" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="BSC">BSC</SelectItem>
-                          <SelectItem value="Discipleship">Discipleship</SelectItem>
-                          <SelectItem value="Counseling">Counseling</SelectItem>
-                          <SelectItem value="Kadosh">Kadosh</SelectItem>
-                          <SelectItem value="Tushia">Tushia</SelectItem>
-                          <SelectItem value="Evange mobilizers">Evange mobilizers</SelectItem>
-                          <SelectItem value="Pray mobilizers">Pray mobilizers</SelectItem>
-                          <SelectItem value="Love sharing">Love sharing</SelectItem>
-                          <SelectItem value="Media">Media</SelectItem>
-                          <SelectItem value="Medicine team">Medicine team</SelectItem>
-                          <SelectItem value="Health team">Health team</SelectItem>
-                          <SelectItem value="Sisters ministry">Sisters ministry</SelectItem>
-                          <SelectItem value="Natanims">Natanims</SelectItem>
-                          <SelectItem value="Fundraising team">Fundraising team</SelectItem>
+                          {fellowshipTeams.map((team) => (
+                            <SelectItem key={team} value={team}>
+                              {team}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-3">
                       <Label htmlFor="leadershipRole" className="text-base font-bold text-gray-800">
-                        Leadership Role <span className="text-muted-foreground">(if any)</span>
+                        Leadership Role <span className="text-muted-foreground">(Optional)</span>
                       </Label>
-                      <Input
-                        id="leadershipRole"
-                        placeholder="e.g., Team Leader, Assistant"
+                      <Select
                         value={formData.leadershipRole}
-                        onChange={(e) => updateFormData('leadershipRole', e.target.value)}
-                      />
+                        onValueChange={(value) => updateFormData('leadershipRole', value)}
+                      >
+                        <SelectTrigger id="leadershipRole" className="h-14 text-base">
+                          <SelectValue placeholder="Select your leadership role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {leadershipRoles.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {role}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-3">
@@ -662,22 +664,40 @@ export default function RegisterPage() {
 
                     <div className="space-y-3">
                       <Label htmlFor="churchName" className="text-base font-bold text-gray-800">Church Name *</Label>
-                      <Input
-                        id="churchName"
-                        placeholder="Enter your church name"
+                      <Select
                         value={formData.churchName}
-                        onChange={(e) => updateFormData('churchName', e.target.value)}
-                      />
+                        onValueChange={(value) => updateFormData('churchName', value)}
+                      >
+                        <SelectTrigger id="churchName" className="h-14 text-base">
+                          <SelectValue placeholder="Select your church" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {churches.map((church) => (
+                            <SelectItem key={church} value={church}>
+                              {church}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-3">
                       <Label htmlFor="spiritualGift" className="text-base font-bold text-gray-800">Spiritual Gift / Talent *</Label>
-                      <Input
-                        id="spiritualGift"
-                        placeholder="e.g., Teaching, Singing, Leadership"
+                      <Select
                         value={formData.spiritualGift}
-                        onChange={(e) => updateFormData('spiritualGift', e.target.value)}
-                      />
+                        onValueChange={(value) => updateFormData('spiritualGift', value)}
+                      >
+                        <SelectTrigger id="spiritualGift" className="h-14 text-base">
+                          <SelectValue placeholder="Select your spiritual gift" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {spiritualGifts.map((gift) => (
+                            <SelectItem key={gift} value={gift}>
+                              {gift}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-3">

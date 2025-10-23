@@ -1195,10 +1195,10 @@ export default function AdminDashboard() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">All Roles</SelectItem>
-                              <SelectItem value="Leader">Leader</SelectItem>
-                              <SelectItem value="Member">Member</SelectItem>
-                              <SelectItem value="Facilitator">Facilitator</SelectItem>
                               <SelectItem value="Coordinator">Coordinator</SelectItem>
+                              <SelectItem value="Contact Person">Contact Person</SelectItem>
+                              <SelectItem value="Member">Member</SelectItem>
+                              <SelectItem value="Not Applicable">Not Applicable</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

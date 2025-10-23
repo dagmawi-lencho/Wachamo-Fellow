@@ -2050,12 +2050,20 @@ export default function AdminDashboard() {
               Are you sure you want to delete this member? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+          <div className="flex gap-3 justify-end pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowDeleteDialog(false)}
+              className="px-6 py-2 border-2"
+            >
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteMember}>
-              Delete
+            <Button 
+              onClick={handleDeleteMember}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-semibold"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Member
             </Button>
           </div>
         </DialogContent>

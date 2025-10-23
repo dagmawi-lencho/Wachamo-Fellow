@@ -556,10 +556,19 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center gradient-spiritual">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-orange-600">
         <div className="text-center">
-          <Cross className="w-16 h-16 mx-auto mb-4 text-primary animate-pulse" />
-          <p className="text-xl font-semibold">Loading...</p>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="w-24 h-24 mx-auto mb-6 relative">
+              <Image src="/logo.png" alt="Logo" fill className="object-contain drop-shadow-2xl" />
+            </div>
+            <div className="w-16 h-16 mx-auto mb-4 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+            <p className="text-2xl font-bold text-white">Loading Dashboard...</p>
+          </motion.div>
         </div>
       </div>
     );
@@ -570,91 +579,87 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-md border-b-4 border-primary/20">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-orange-50">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-white p-2 border-2 border-primary relative">
-                <Image 
-                  src="/logo.png" 
-                  alt="Wachamo Fellowship Logo" 
-                  fill
-                  className="object-contain p-1"
-                />
+            <div className="flex items-center gap-4">
+              <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2ea7df] to-[#f59f45] p-[2px] shadow-lg">
+                <div className="w-full h-full rounded-2xl bg-white p-2">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Wachamo Fellowship Logo" 
+                    fill
+                    className="object-contain p-0.5"
+                  />
+                </div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Admin Dashboard
+                <h1 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-[#2ea7df] via-purple-600 to-[#f59f45] bg-clip-text text-transparent">
+                  Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">Wachamo Fellowship Management</p>
+                <p className="text-sm text-gray-600 font-medium">Wachamo Fellowship Admin</p>
               </div>
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
               <Button
-                variant="outline"
                 onClick={() => router.push('/admin/products')}
-                className="border-2 hover:bg-orange-50 hover:border-orange-300"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <ShoppingCart className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Products</span>
+                <span className="hidden sm:inline font-semibold">Products</span>
               </Button>
               <Button
-                variant="outline"
                 onClick={() => setShowPaymentDialog(true)}
-                className="border-2 hover:bg-green-50 hover:border-green-300"
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <CreditCard className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Payment</span>
+                <span className="hidden sm:inline font-semibold">Payment</span>
               </Button>
               <Button
-                variant="outline"
                 onClick={() => setShowAdminDialog(true)}
-                className="border-2 hover:bg-purple-50 hover:border-purple-300"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <Shield className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Admins</span>
+                <span className="hidden sm:inline font-semibold">Admins</span>
               </Button>
               <Button
-                variant="outline"
                 onClick={() => setShowSettingsDialog(true)}
-                className="border-2 hover:bg-primary/10"
+                className="bg-gradient-to-r from-[#2ea7df] to-blue-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <Settings className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Registration</span>
+                <span className="hidden sm:inline font-semibold">Settings</span>
               </Button>
               <Button
-                variant="outline"
                 onClick={() => setShowQuotesDialog(true)}
-                className="border-2 hover:bg-blue-50 hover:border-blue-300"
+                className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <BookOpen className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Quotes</span>
+                <span className="hidden sm:inline font-semibold">Quotes</span>
               </Button>
               <Button
-                variant="outline"
                 onClick={handleLogout}
-                className="border-2 hover:bg-destructive/10 hover:text-destructive"
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
                 size="sm"
               >
                 <LogOut className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline font-semibold">Logout</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 lg:w-[1000px]">
+      <div className="container mx-auto px-4 lg:px-6 py-8">
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="bg-white/80 backdrop-blur-sm border border-gray-200 p-1.5 rounded-2xl shadow-lg grid w-full grid-cols-2 lg:grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -678,24 +683,28 @@ export default function AdminDashboard() {
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-8">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="border-2 border-primary/20 hover:shadow-lg transition-shadow">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-                    <Users className="w-5 h-5 text-primary" />
+                <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-blue-500 to-blue-600">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Total Members</CardTitle>
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary">
+                  <CardContent className="relative z-10">
+                    <div className="text-4xl font-black text-white mb-1">
                       {stats?.overview?.totalMembers || 0}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-white/80 font-medium">
                       All registered members
                     </p>
                   </CardContent>
@@ -706,17 +715,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="border-2 border-secondary/20 hover:shadow-lg transition-shadow">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">New Members</CardTitle>
-                    <UserPlus className="w-5 h-5 text-secondary" />
+                <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-orange-500 to-orange-600">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">New Members</CardTitle>
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <UserPlus className="w-6 h-6 text-white" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary">
+                  <CardContent className="relative z-10">
+                    <div className="text-4xl font-black text-white mb-1">
                       {stats?.overview?.newMembers || 0}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-white/80 font-medium">
                       Recently joined
                     </p>
                   </CardContent>
@@ -727,17 +740,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="border-2 border-green-500/20 hover:shadow-lg transition-shadow">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Bible Study</CardTitle>
-                    <BookOpen className="w-5 h-5 text-green-500" />
+                <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-green-500 to-emerald-600">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Bible Study</CardTitle>
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <BookOpen className="w-6 h-6 text-white" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-green-500">
+                  <CardContent className="relative z-10">
+                    <div className="text-4xl font-black text-white mb-1">
                       {stats?.overview?.attendingBibleStudy || 0}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-white/80 font-medium">
                       Attending classes
                     </p>
                   </CardContent>
@@ -748,17 +765,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
+                whileHover={{ y: -4 }}
               >
-                <Card className="border-2 border-purple-500/20 hover:shadow-lg transition-shadow">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Born Again</CardTitle>
-                    <Heart className="w-5 h-5 text-purple-500" />
+                <Card className="relative overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Born Again</CardTitle>
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <Heart className="w-6 h-6 text-white" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-purple-500">
+                  <CardContent className="relative z-10">
+                    <div className="text-4xl font-black text-white mb-1">
                       {stats?.overview?.bornAgainYes || 0}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-white/80 font-medium">
                       Believers
                     </p>
                   </CardContent>
@@ -772,17 +793,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
+                whileHover={{ scale: 1.02 }}
               >
-                <Card className="border-2 border-green-500/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                    <CreditCard className="w-5 h-5 text-green-500" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-green-600">
-                      {stats?.overview?.totalRevenue || 0} ETB
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-white">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-gray-700">Total Revenue</CardTitle>
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <CreditCard className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">
+                      {stats?.overview?.totalRevenue || 0} <span className="text-xl">ETB</span>
+                    </div>
+                    <p className="text-xs text-gray-600 font-medium">
                       From approved payments
                     </p>
                   </CardContent>
@@ -793,17 +818,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6 }}
+                whileHover={{ scale: 1.02 }}
               >
-                <Card className="border-2 border-primary/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-cyan-50">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Donations</CardTitle>
-                    <Heart className="w-5 h-5 text-primary" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-primary">
-                      {stats?.overview?.totalDonations || 0} ETB
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-white">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#2ea7df]/10 to-blue-500/10"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-gray-700">Donations</CardTitle>
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#2ea7df] to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <Heart className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black bg-gradient-to-r from-[#2ea7df] to-blue-600 bg-clip-text text-transparent mb-1">
+                      {stats?.overview?.totalDonations || 0} <span className="text-xl">ETB</span>
+                    </div>
+                    <p className="text-xs text-gray-600 font-medium">
                       Generous contributions
                     </p>
                   </CardContent>
@@ -814,17 +843,21 @@ export default function AdminDashboard() {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.7 }}
+                whileHover={{ scale: 1.02 }}
               >
-                <Card className="border-2 border-secondary/20 hover:shadow-lg transition-shadow bg-gradient-to-br from-orange-50 to-amber-50">
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">Product Sales</CardTitle>
-                    <ShoppingCart className="w-5 h-5 text-secondary" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-secondary">
-                      {stats?.overview?.totalSales || 0} ETB
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-white">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#f59f45]/10 to-orange-500/10"></div>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-gray-700">Product Sales</CardTitle>
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#f59f45] to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <ShoppingCart className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black bg-gradient-to-r from-[#f59f45] to-orange-600 bg-clip-text text-transparent mb-1">
+                      {stats?.overview?.totalSales || 0} <span className="text-xl">ETB</span>
+                    </div>
+                    <p className="text-xs text-gray-600 font-medium">
                       From shop purchases
                     </p>
                   </CardContent>
@@ -834,48 +867,52 @@ export default function AdminDashboard() {
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PieChart className="w-5 h-5 text-primary" />
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-orange-50">
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#2ea7df] to-[#f59f45] rounded-lg flex items-center justify-center">
+                      <PieChart className="w-5 h-5 text-white" />
+                    </div>
                     Membership Distribution
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-primary">{stats?.overview?.newMembers || 0}</p>
-                      <p className="text-sm text-muted-foreground">New</p>
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border-2 border-blue-200/50 hover:scale-105 transition-transform">
+                      <p className="text-3xl font-black bg-gradient-to-r from-[#2ea7df] to-blue-600 bg-clip-text text-transparent">{stats?.overview?.newMembers || 0}</p>
+                      <p className="text-sm text-gray-600 font-semibold mt-1">New</p>
                     </div>
-                    <div className="text-center p-4 bg-orange-50 rounded-lg">
-                      <p className="text-2xl font-bold text-secondary">{stats?.overview?.existingMembers || 0}</p>
-                      <p className="text-sm text-muted-foreground">Existing</p>
+                    <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border-2 border-orange-200/50 hover:scale-105 transition-transform">
+                      <p className="text-3xl font-black bg-gradient-to-r from-[#f59f45] to-orange-600 bg-clip-text text-transparent">{stats?.overview?.existingMembers || 0}</p>
+                      <p className="text-sm text-gray-600 font-semibold mt-1">Existing</p>
                     </div>
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <p className="text-2xl font-bold text-blue-600">{stats?.overview?.maleMembers || 0}</p>
-                      <p className="text-sm text-muted-foreground">Male</p>
+                    <div className="text-center p-4 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-2xl border-2 border-cyan-200/50 hover:scale-105 transition-transform">
+                      <p className="text-3xl font-black bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">{stats?.overview?.maleMembers || 0}</p>
+                      <p className="text-sm text-gray-600 font-semibold mt-1">Male</p>
                     </div>
-                    <div className="text-center p-4 bg-pink-50 rounded-lg">
-                      <p className="text-2xl font-bold text-pink-600">{stats?.overview?.femaleMembers || 0}</p>
-                      <p className="text-sm text-muted-foreground">Female</p>
+                    <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl border-2 border-pink-200/50 hover:scale-105 transition-transform">
+                      <p className="text-3xl font-black bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">{stats?.overview?.femaleMembers || 0}</p>
+                      <p className="text-sm text-gray-600 font-semibold mt-1">Female</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-primary" />
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                      <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
                     Top Departments
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="space-y-3">
-                    {stats?.charts?.membersByDepartment.slice(0, 5).map((dept) => (
-                      <div key={dept._id} className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{dept._id}</span>
-                        <Badge className="gradient-primary text-white">{dept.count}</Badge>
+                    {stats?.charts?.membersByDepartment.slice(0, 5).map((dept, idx) => (
+                      <div key={dept._id} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl hover:from-blue-50 hover:to-orange-50 transition-colors">
+                        <span className="text-sm font-semibold text-gray-700">{dept._id}</span>
+                        <Badge className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white border-0 shadow-md px-3 py-1 text-sm font-bold">{dept.count}</Badge>
                       </div>
                     ))}
                   </div>
@@ -886,7 +923,7 @@ export default function AdminDashboard() {
 
           {/* Members Tab */}
           <TabsContent value="members" className="space-y-6">
-            <Card>
+            <Card className="border-0 shadow-xl bg-white">
               <CardHeader>
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between">
@@ -1372,60 +1409,92 @@ export default function AdminDashboard() {
           {/* Transactions Tab */}
           <TabsContent value="transactions" className="space-y-6">
             {/* Transaction Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-600">
-                    {transactionStats?.totalRevenue || 0} ETB
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">All successful payments</p>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                whileHover={{ y: -4 }}
+              >
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-green-500 to-emerald-600">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
+                  <CardHeader className="pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Total Revenue</CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black text-white">
+                      {transactionStats?.totalRevenue || 0} <span className="text-lg">ETB</span>
+                    </div>
+                    <p className="text-xs text-white/80 font-medium mt-1">All successful payments</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Donations</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-primary">
-                    {transactionStats?.totalDonations || 0} ETB
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">From generous donors</p>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                whileHover={{ y: -4 }}
+              >
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-[#2ea7df] to-blue-600">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
+                  <CardHeader className="pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Donations</CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black text-white">
+                      {transactionStats?.totalDonations || 0} <span className="text-lg">ETB</span>
+                    </div>
+                    <p className="text-xs text-white/80 font-medium mt-1">From generous donors</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Product Sales</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-secondary">
-                    {transactionStats?.totalSales || 0} ETB
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">From shop purchases</p>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                whileHover={{ y: -4 }}
+              >
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-[#f59f45] to-orange-600">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
+                  <CardHeader className="pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Product Sales</CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black text-white">
+                      {transactionStats?.totalSales || 0} <span className="text-lg">ETB</span>
+                    </div>
+                    <p className="text-xs text-white/80 font-medium mt-1">From shop purchases</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium text-gray-600">Successful Payments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-600">
-                    {transactionStats?.successCount || 0}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {transactionStats?.pendingCount || 0} pending • {transactionStats?.failedCount || 0} failed
-                  </p>
-                </CardContent>
-              </Card>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+                whileHover={{ y: -4 }}
+              >
+                <Card className="relative overflow-hidden border-0 shadow-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12"></div>
+                  <CardHeader className="pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-white/90">Successful Payments</CardTitle>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="text-3xl font-black text-white">
+                      {transactionStats?.successCount || 0}
+                    </div>
+                    <p className="text-xs text-white/80 font-medium mt-1">
+                      {transactionStats?.pendingCount || 0} pending • {transactionStats?.failedCount || 0} failed
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </div>
 
             {/* Transactions Table */}
-            <Card>
+            <Card className="border-0 shadow-xl bg-white">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -1758,9 +1827,14 @@ export default function AdminDashboard() {
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Members by College Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Members by College</CardTitle>
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50">
+                  <CardTitle className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#2ea7df] to-blue-600 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-4 h-4 text-white" />
+                    </div>
+                    Members by College
+                  </CardTitle>
                   <CardDescription>Distribution across colleges</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1777,9 +1851,14 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Academic Year Distribution */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Academic Year Distribution</CardTitle>
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+                  <CardTitle className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                      <GraduationCap className="w-4 h-4 text-white" />
+                    </div>
+                    Academic Year Distribution
+                  </CardTitle>
                   <CardDescription>Members by year of study</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1806,9 +1885,14 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Recent Registrations */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Registrations</CardTitle>
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+                  <CardTitle className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                      <Activity className="w-4 h-4 text-white" />
+                    </div>
+                    Recent Registrations
+                  </CardTitle>
                   <CardDescription>Last 7 days activity</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1832,9 +1916,14 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Fellowship Teams */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Fellowship Teams</CardTitle>
+              <Card className="border-0 shadow-xl bg-white">
+                <CardHeader className="bg-gradient-to-r from-orange-50 to-amber-50">
+                  <CardTitle className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#f59f45] to-orange-600 rounded-lg flex items-center justify-center">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    Fellowship Teams
+                  </CardTitle>
                   <CardDescription>Members by team</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1854,21 +1943,28 @@ export default function AdminDashboard() {
 
           {/* Banks Tab */}
           <TabsContent value="banks" className="space-y-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle>Bank Accounts Management</CardTitle>
-                  <CardDescription>Manage fellowship bank accounts for donations and payments</CardDescription>
+            <Card className="border-0 shadow-xl bg-white">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+                <div className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                        <CreditCard className="w-4 h-4 text-white" />
+                      </div>
+                      Bank Accounts Management
+                    </CardTitle>
+                    <CardDescription>Manage fellowship bank accounts for donations and payments</CardDescription>
+                  </div>
+                  <Button 
+                    onClick={() => {
+                      setBankToEdit(undefined);
+                      setShowBankDialog(true);
+                    }}
+                    className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all font-semibold"
+                  >
+                    + Add Bank
+                  </Button>
                 </div>
-                <Button 
-                  onClick={() => {
-                    setBankToEdit(undefined);
-                    setShowBankDialog(true);
-                  }}
-                  className="gradient-primary text-white"
-                >
-                  + Add Bank
-                </Button>
               </CardHeader>
               <CardContent>
                 <Table>

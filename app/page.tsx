@@ -17,10 +17,27 @@ export default function Home() {
   const y2 = useTransform(scrollY, [0, 300], [0, -100]);
   const opacity = useTransform(scrollY, [0, 200], [1, 0]);
   const [isVisible, setIsVisible] = useState(false);
+  const [bibleQuote, setBibleQuote] = useState({
+    verse: "For where two or three gather in my name, there am I with them.",
+    reference: "Matthew 18:20"
+  });
 
   useEffect(() => {
     setIsVisible(true);
+    fetchBibleQuote();
   }, []);
+
+  const fetchBibleQuote = async () => {
+    try {
+      const res = await fetch('/api/bible-quotes/current');
+      const data = await res.json();
+      if (data.success && data.quote) {
+        setBibleQuote(data.quote);
+      }
+    } catch (error) {
+      console.error('Failed to fetch Bible quote:', error);
+    }
+  };
 
   const galleryImages = [
     '/photo_1_2025-10-22_20-34-24.jpg',
@@ -78,14 +95,14 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <div className="relative w-12 h-12">
                 <Image src="/logo.png" alt="Fellowship Logo" fill className="object-contain" />
-              </div>
+      </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
                   Wachamo Fellowship
                 </h1>
-              </div>
-            </div>
-            
+      </div>
+      </div>
+
             <div className="hidden md:flex items-center gap-6">
               <a href="#about" className="text-gray-700 hover:text-[#2ea7df] transition-colors font-medium">About</a>
               <a href="#gallery" className="text-gray-700 hover:text-[#2ea7df] transition-colors font-medium">Gallery</a>
@@ -98,8 +115,8 @@ export default function Home() {
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 Shop
               </Button>
-              <Button
-                variant="outline"
+          <Button
+            variant="outline"
                 onClick={() => router.push('/track-order')}
                 className="border-2 border-[#f59f45] text-[#f59f45] hover:bg-[#f59f45] hover:text-white"
               >
@@ -118,13 +135,13 @@ export default function Home() {
             <div className="md:hidden flex gap-2">
               <Button size="sm" onClick={() => router.push('/register')} className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white">
                 Join
-              </Button>
+          </Button>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
+        {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         {/* Animated Background */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50">
@@ -180,22 +197,22 @@ export default function Home() {
             Discover your purpose, deepen your faith, and make lifelong connections.
           </motion.p>
 
-          <motion.div
+            <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 30 }}
             transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Button
-              size="lg"
-              onClick={() => router.push('/register')}
+            >
+              <Button
+                size="lg"
+                onClick={() => router.push('/register')}
               className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white text-lg px-12 py-7 rounded-full shadow-2xl hover:shadow-3xl hover:scale-105 transition-all group"
             >
               <span>Start Your Journey</span>
               <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
-            </Button>
+              </Button>
             
-            <Button
+                  <Button
               size="lg"
               variant="outline"
               onClick={() => router.push('/donate')}
@@ -203,9 +220,9 @@ export default function Home() {
             >
               <Gift className="w-5 h-5 mr-2" />
               Support Us
-            </Button>
-          </motion.div>
-
+                  </Button>
+                </motion.div>
+                
           <motion.div
             style={{ opacity }}
             className="mt-16 flex justify-center"
@@ -213,7 +230,7 @@ export default function Home() {
             <a href="#stats" className="text-gray-400 hover:text-[#2ea7df] transition-colors">
               <ChevronDown className="w-8 h-8 animate-bounce" />
             </a>
-          </motion.div>
+                </motion.div>
         </div>
       </section>
 
@@ -403,8 +420,8 @@ export default function Home() {
                 <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
           </div>
         </div>
       </section>
@@ -568,9 +585,9 @@ export default function Home() {
 
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
             <p>&copy; 2025/26 Wachamo Fellowship. Built with ❤️ by Dagmawi Lencho</p>
-            <p className="mt-2 italic">&quot;For where two or three gather in my name, there am I with them.&quot; - Matthew 18:20</p>
+            <p className="mt-2 italic">&quot;{bibleQuote.verse}&quot; - {bibleQuote.reference}</p>
           </div>
-        </div>
+      </div>
       </footer>
     </div>
   );

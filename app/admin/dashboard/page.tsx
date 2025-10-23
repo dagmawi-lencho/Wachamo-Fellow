@@ -38,6 +38,7 @@ import { EditMemberDialog } from '@/components/EditMemberDialog';
 import { AdminManagementDialog } from '@/components/AdminManagementDialog';
 import { PaymentSettingsDialog } from '@/components/PaymentSettingsDialog';
 import { BankManagementDialog } from '@/components/BankManagementDialog';
+import { BibleQuoteDialog } from '@/components/BibleQuoteDialog';
 import { Label } from '@/components/ui/label';
 import { colleges } from '@/lib/academicData';
 import { fellowshipTeams } from '@/lib/fellowshipTeams';
@@ -124,6 +125,7 @@ export default function AdminDashboard() {
   const [showAdminDialog, setShowAdminDialog] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showBankDialog, setShowBankDialog] = useState(false);
+  const [showQuotesDialog, setShowQuotesDialog] = useState(false);
   const [bankToEdit, setBankToEdit] = useState<{
     _id?: string;
     bankName: string;
@@ -626,6 +628,15 @@ export default function AdminDashboard() {
               >
                 <Settings className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">Registration</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowQuotesDialog(true)}
+                className="border-2 hover:bg-blue-50 hover:border-blue-300"
+                size="sm"
+              >
+                <BookOpen className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Quotes</span>
               </Button>
               <Button
                 variant="outline"
@@ -1930,6 +1941,12 @@ export default function AdminDashboard() {
       <PaymentSettingsDialog
         open={showPaymentDialog}
         onOpenChange={setShowPaymentDialog}
+      />
+
+      {/* Bible Quotes Dialog */}
+      <BibleQuoteDialog
+        open={showQuotesDialog}
+        onOpenChange={setShowQuotesDialog}
       />
 
       {/* Receipt Viewer Dialog */}

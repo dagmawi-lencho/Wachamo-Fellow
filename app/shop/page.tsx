@@ -30,10 +30,27 @@ export default function ShopPage() {
   const [cartCount, setCartCount] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
   const [lastAddedProduct, setLastAddedProduct] = useState<string>('');
+  const [bibleQuote, setBibleQuote] = useState({
+    verse: "For where two or three gather in my name, there am I with them.",
+    reference: "Matthew 18:20"
+  });
 
   useEffect(() => {
     setCartCount(cartStore.getCount());
+    fetchBibleQuote();
   }, []);
+
+  const fetchBibleQuote = async () => {
+    try {
+      const res = await fetch('/api/bible-quotes/current');
+      const data = await res.json();
+      if (data.success && data.quote) {
+        setBibleQuote(data.quote);
+      }
+    } catch (error) {
+      console.error('Failed to fetch Bible quote:', error);
+    }
+  };
 
   const categories = ['all', 'Bible', 'Books', 'Stickers', 'T-Shirts', 'Accessories', 'Other'];
 
@@ -122,8 +139,8 @@ export default function ShopPage() {
 
       {/* Success Notification */}
       <AnimatePresence>
-        {showNotification && (
-          <motion.div
+      {showNotification && (
+        <motion.div
             initial={{ opacity: 0, y: -50, x: '-50%' }}
             animate={{ opacity: 1, y: 20 }}
             exit={{ opacity: 0, y: -50 }}
@@ -131,11 +148,11 @@ export default function ShopPage() {
           >
             <Check className="w-5 h-5" />
             <span className="font-semibold">Added &quot;{lastAddedProduct}&quot; to cart!</span>
-          </motion.div>
-        )}
+        </motion.div>
+      )}
       </AnimatePresence>
 
-      {/* Hero Section */}
+        {/* Hero Section */}
       <section className="pt-32 pb-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-20 left-10 w-96 h-96 bg-[#2ea7df] rounded-full filter blur-3xl animate-pulse"></div>
@@ -143,30 +160,30 @@ export default function ShopPage() {
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <motion.div
+        <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
+          className="text-center mb-12"
+        >
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full border border-[#2ea7df]/30 shadow-sm mb-6">
               <Sparkles className="w-4 h-4 text-[#f59f45]" />
               <span className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Fellowship Store</span>
-            </div>
+          </div>
             <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6">
               Equip Your <span className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">Faith Journey</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Browse our collection of Bibles, books, merchandise, and more to support your spiritual growth
-            </p>
-          </motion.div>
+          </p>
+        </motion.div>
 
-          {/* Category Filter */}
-          <motion.div
+        {/* Category Filter */}
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          transition={{ delay: 0.2 }}
             className="flex items-center justify-center gap-3 mb-12 flex-wrap"
-          >
+        >
             <Filter className="w-5 h-5 text-gray-600" />
             {categories.map((cat) => (
               <Button
@@ -184,31 +201,31 @@ export default function ShopPage() {
                 )}
               </Button>
             ))}
-          </motion.div>
+        </motion.div>
 
-          {/* Products Grid */}
-          {isLoading ? (
+        {/* Products Grid */}
+        {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="animate-pulse">
                   <div className="bg-gray-200 h-80 rounded-3xl"></div>
                 </div>
               ))}
-            </div>
-          ) : filteredProducts.length === 0 ? (
-            <motion.div
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="text-center py-20"
             >
               <Package className="w-24 h-24 mx-auto text-gray-300 mb-4" />
               <p className="text-xl text-gray-500">No products found in this category</p>
-            </motion.div>
-          ) : (
+          </motion.div>
+        ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product._id}
+            {filteredProducts.map((product, index) => (
+              <motion.div
+                key={product._id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
@@ -218,8 +235,8 @@ export default function ShopPage() {
                     {/* Product Image */}
                     <div className="relative h-64 bg-gradient-to-br from-blue-50 to-orange-50 overflow-hidden">
                       {product.imageUrl ? (
-                        <Image
-                          src={product.imageUrl}
+                        <Image 
+                          src={product.imageUrl} 
                           alt={product.name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -234,8 +251,8 @@ export default function ShopPage() {
                       <div className="absolute top-4 left-4">
                         <Badge className="bg-white/90 backdrop-blur-sm text-gray-700 border-0 shadow-lg">
                           <Tag className="w-3 h-3 mr-1" />
-                          {product.category}
-                        </Badge>
+                        {product.category}
+                      </Badge>
                       </div>
 
                       {/* Stock Badge */}
@@ -264,7 +281,7 @@ export default function ShopPage() {
                       <CardDescription className="line-clamp-2 text-gray-600">
                         {product.description}
                       </CardDescription>
-                    </CardHeader>
+                  </CardHeader>
 
                     <CardContent className="pt-0">
                       <div className="flex items-center justify-between mb-4">
@@ -280,27 +297,27 @@ export default function ShopPage() {
                         onClick={() => addToCart(product)}
                         disabled={!product.isAvailable || product.stock === 0 || addingToCart === product._id}
                         className="w-full bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white font-semibold py-6 rounded-2xl hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                      >
-                        {addingToCart === product._id ? (
+                        >
+                          {addingToCart === product._id ? (
                           <>
                             <Check className="w-5 h-5 mr-2" />
                             Added!
                           </>
                         ) : !product.isAvailable || product.stock === 0 ? (
-                          'Out of Stock'
-                        ) : (
-                          <>
+                            'Out of Stock'
+                          ) : (
+                            <>
                             <Plus className="w-5 h-5 mr-2" />
-                            Add to Cart
-                          </>
-                        )}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                              Add to Cart
+                            </>
+                          )}
+                        </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
         </div>
       </section>
 
@@ -314,7 +331,7 @@ export default function ShopPage() {
         </div>
 
         <div className="container mx-auto px-4 text-center relative z-10">
-          <motion.div
+        <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -334,18 +351,18 @@ export default function ShopPage() {
               >
                 <Heart className="w-5 h-5 mr-2" />
                 Make a Donation
-              </Button>
+                  </Button>
               <Button
                 size="lg"
                 onClick={() => router.push('/')}
                 className="bg-transparent border-2 border-white text-white text-lg px-12 py-7 rounded-full hover:bg-white hover:text-[#2ea7df] transition-all font-bold"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to Home
-              </Button>
-            </div>
-          </motion.div>
-        </div>
+                    Back to Home
+                  </Button>
+                </div>
+        </motion.div>
+      </div>
       </section>
 
       {/* Footer */}
@@ -364,7 +381,7 @@ export default function ShopPage() {
             info@wcufellowship.com • +251 916 362 062 • Hosaina, Ambicho
           </p>
           <p className="text-gray-500 italic text-sm">
-            &quot;For where two or three gather in my name, there am I with them.&quot; - Matthew 18:20
+            &quot;{bibleQuote.verse}&quot; - {bibleQuote.reference}
           </p>
         </div>
       </footer>

@@ -16,6 +16,7 @@ export const departmentsByCollege: Record<string, string[]> = {
   "Freshman": [
     "Freshman",
     "Pre-Engineering",
+    "Remedial",
     "Other Natural Science",
     "Other Social Science",
   ],

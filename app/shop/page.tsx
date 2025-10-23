@@ -105,7 +105,7 @@ export default function ShopPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
-                  Wachamo Fellowship Shop
+                  Wachamo Fellowship Bsc Team Shop
                 </h1>
                 <p className="text-xs text-gray-600">Christian Resources & More</p>
               </div>
@@ -293,8 +293,8 @@ export default function ShopPage() {
                         </div>
                       </div>
 
-                      <Button
-                        onClick={() => addToCart(product)}
+                        <Button 
+                          onClick={() => addToCart(product)}
                         disabled={!product.isAvailable || product.stock === 0 || addingToCart === product._id}
                         className="w-full bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white font-semibold py-6 rounded-2xl hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         >
@@ -372,10 +372,10 @@ export default function ShopPage() {
             <div className="relative w-10 h-10">
               <Image src="/logo.png" alt="Logo" fill className="object-contain" />
             </div>
-            <h3 className="text-xl font-bold">Wachamo Fellowship</h3>
+            <h3 className="text-xl font-bold">Wachamo Fellowship Bsc Team</h3>
           </div>
           <p className="text-gray-400 text-sm mb-2">
-            &copy; 2025/26 Wachamo Fellowship. Built with ❤️ by Dagmawi Lencho
+            &copy; 2025/26 Wachamo Fellowship Bsc Team. Built with ❤️ by Dagmawi Lencho
           </p>
           <p className="text-gray-400 text-sm mb-4">
             info@wcufellowship.com • +251 916 362 062 • Hosaina, Ambicho

@@ -69,7 +69,7 @@ export default function DonatePage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
-                  Wachamo Fellowship Support
+                  Wachamo Fellowship Bsc Team Support
                 </h1>
                 <p className="text-xs text-gray-600">Every gift makes a difference</p>
               </div>

@@ -300,7 +300,7 @@ export default function RegisterPage() {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
                 Fellowship Registration
               </h1>
-              <p className="text-sm sm:text-base text-gray-600">Join the Wachamo University Fellowship</p>
+              <p className="text-sm sm:text-base text-gray-600">Join the Wachamo Fellowship Bsc Team</p>
             </div>
           </div>
         </motion.div>

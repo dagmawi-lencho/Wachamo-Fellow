@@ -98,7 +98,7 @@ export default function Home() {
       </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-[#2ea7df] to-[#f59f45] bg-clip-text text-transparent">
-                  Wachamo Fellowship
+                  Wachamo Fellowship Bsc Team
                 </h1>
       </div>
       </div>
@@ -533,7 +533,7 @@ export default function Home() {
                   <Image src="/logo.png" alt="Logo" fill className="object-contain" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Wachamo Fellowship</h3>
+                  <h3 className="font-bold text-lg">Wachamo Fellowship Bsc Team</h3>
                 </div>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -584,7 +584,7 @@ export default function Home() {
           </div>
 
           <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025/26 Wachamo Fellowship. Built with ❤️ by Dagmawi Lencho</p>
+            <p>&copy; 2025/26 Wachamo Fellowship Bsc Team. Built with ❤️ by Dagmawi Lencho</p>
             <p className="mt-2 italic">&quot;{bibleQuote.verse}&quot; - {bibleQuote.reference}</p>
           </div>
       </div>

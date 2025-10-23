@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Wachamo Fellowship - Evangelical Students Union",
-  description: "We are the Wachamo University Evangelical Students Union Fellowship - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
+  title: "Wachamo Fellowship Bsc Team - Evangelical Students Union",
+  description: "We are the Wachamo Fellowship Bsc Team - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
   keywords: ["Wachamo University", "Fellowship", "Christian", "Students Union", "Evangelical", "Bible Study", "Discipleship", "Worship"],
   authors: [{ name: "Dagmawi Lencho" }],
   creator: "Dagmawi Lencho",
@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     apple: '/logo.png',
   },
   openGraph: {
-    title: "Wachamo Fellowship - Evangelical Students Union",
-    description: "We are the Wachamo University Evangelical Students Union Fellowship - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
+    title: "Wachamo Fellowship Bsc Team - Evangelical Students Union",
+    description: "We are the Wachamo Fellowship Bsc Team - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
     url: "https://wachamo-fellow1.vercel.app",
-    siteName: "Wachamo Fellowship",
+    siteName: "Wachamo Fellowship Bsc Team",
     images: [
       {
         url: '/logo.png',
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Wachamo Fellowship - Evangelical Students Union",
-    description: "We are the Wachamo University Evangelical Students Union Fellowship - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
+    title: "Wachamo Fellowship Bsc Team - Evangelical Students Union",
+    description: "We are the Wachamo Fellowship Bsc Team - a passionate community dedicated to glorifying God through worship, discipleship, and service.",
     images: ['/logo.png'],
   },
 };

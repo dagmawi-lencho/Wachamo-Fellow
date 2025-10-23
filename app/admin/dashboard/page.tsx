@@ -148,6 +148,7 @@ export default function AdminDashboard() {
     sex: 'all',
     bornAgain: 'all',
     attendingBibleStudy: 'all',
+    bibleStudyRole: 'all',
     academicYear: 'all',
     alphabetFilter: 'all'
   });
@@ -461,6 +462,7 @@ export default function AdminDashboard() {
         if (filters.sex && filters.sex !== 'all' && member.sex !== filters.sex) return false;
         if (filters.bornAgain && filters.bornAgain !== 'all' && member.bornAgain !== filters.bornAgain) return false;
         if (filters.attendingBibleStudy && filters.attendingBibleStudy !== 'all' && member.attendingBibleStudy !== filters.attendingBibleStudy) return false;
+        if (filters.bibleStudyRole && filters.bibleStudyRole !== 'all' && member.bibleStudyRole !== filters.bibleStudyRole) return false;
         if (filters.academicYear && filters.academicYear !== 'all' && member.academicYear !== filters.academicYear) return false;
 
         return true;
@@ -480,6 +482,7 @@ export default function AdminDashboard() {
       sex: 'all',
       bornAgain: 'all',
       attendingBibleStudy: 'all',
+      bibleStudyRole: 'all',
       academicYear: 'all',
       alphabetFilter: 'all'
     });
@@ -599,7 +602,7 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-[#2ea7df] via-purple-600 to-[#f59f45] bg-clip-text text-transparent">
                   Dashboard
                 </h1>
-                <p className="text-sm text-gray-600 font-medium">Wachamo Fellowship Admin</p>
+                <p className="text-sm text-gray-600 font-medium">Wachamo Fellowship Bsc Team Admin</p>
               </div>
             </div>
             
@@ -1155,6 +1158,47 @@ export default function AdminDashboard() {
                               <SelectItem value="all">All</SelectItem>
                               <SelectItem value="Yes">Attending</SelectItem>
                               <SelectItem value="No">Not Attending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Department Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Department</Label>
+                          <Select
+                            value={filters.department}
+                            onValueChange={(val) => setFilters({ ...filters, department: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All Departments" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">
+                              <SelectItem value="all">All Departments</SelectItem>
+                              {Array.from(new Set(members.map(m => m.department).filter(Boolean))).sort().map((dept) => (
+                                <SelectItem key={dept} value={dept}>
+                                  {dept}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Bible Study Role Filter */}
+                        <div className="space-y-2">
+                          <Label className="text-sm font-semibold">Bible Study Role</Label>
+                          <Select
+                            value={filters.bibleStudyRole}
+                            onValueChange={(val) => setFilters({ ...filters, bibleStudyRole: val })}
+                          >
+                            <SelectTrigger className="bg-white/80">
+                              <SelectValue placeholder="All" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Roles</SelectItem>
+                              <SelectItem value="Leader">Leader</SelectItem>
+                              <SelectItem value="Member">Member</SelectItem>
+                              <SelectItem value="Facilitator">Facilitator</SelectItem>
+                              <SelectItem value="Coordinator">Coordinator</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

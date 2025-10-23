@@ -163,21 +163,22 @@ export function BibleQuoteDialog({ open, onOpenChange }: Props) {
                 />
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-gradient-to-r from-primary to-secondary text-white"
+                  className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white font-semibold px-8 py-6 text-lg hover:shadow-lg hover:scale-105 transition-all"
                 >
-                  {isSubmitting ? 'Saving...' : editingQuote ? 'Update Quote' : 'Add Quote'}
+                  {isSubmitting ? 'Saving...' : editingQuote ? '✓ Update Quote' : '+ Add Quote'}
                 </Button>
                 {editingQuote && (
                   <Button
                     type="button"
                     variant="outline"
                     onClick={cancelEdit}
+                    className="px-6 py-6 border-2"
                   >
-                    Cancel Edit
+                    Cancel
                   </Button>
                 )}
               </div>

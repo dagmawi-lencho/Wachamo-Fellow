@@ -199,7 +199,7 @@ export default function AdminDashboard() {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch('/api/members?limit=100');
+      const response = await fetch('/api/members?limit=10000');
       const data = await response.json();
       setMembers(data.members);
     } catch (error) {

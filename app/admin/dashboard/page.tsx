@@ -9,7 +9,7 @@ import {
   Users, UserPlus, BookOpen, 
   LogOut, Settings, Search,
   Edit, Trash2, Shield,
-  Cross, Heart, GraduationCap,
+  Heart, GraduationCap,
   BarChart3, PieChart, Activity,
   Download, Filter, X,
   ChevronLeft, ChevronRight, ShoppingCart, CreditCard
@@ -936,7 +936,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="pt-6">
                   <div className="space-y-3">
-                    {stats?.charts?.membersByDepartment.slice(0, 5).map((dept, idx) => (
+                    {stats?.charts?.membersByDepartment.slice(0, 5).map((dept) => (
                       <div key={dept._id} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl hover:from-blue-50 hover:to-orange-50 transition-colors">
                         <span className="text-sm font-semibold text-gray-700">{dept._id}</span>
                         <Badge className="bg-gradient-to-r from-[#2ea7df] to-[#f59f45] text-white border-0 shadow-md px-3 py-1 text-sm font-bold">{dept.count}</Badge>

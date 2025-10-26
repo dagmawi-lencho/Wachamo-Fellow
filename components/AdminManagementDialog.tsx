@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Shield, UserPlus, Trash2, AlertCircle, Check, Crown, Settings as SettingsIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { Shield, UserPlus, Trash2, AlertCircle, Check, Crown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PERMISSION_GROUPS, Permission, Role } from '@/lib/permissions';
@@ -40,7 +40,6 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
     role: 'admin' as Role,
     permissions: [] as Permission[]
   });
-  const [showPermissions, setShowPermissions] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -104,7 +103,6 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
         setSuccess('Admin created successfully!');
         setNewAdmin({ email: '', password: '', confirmPassword: '', role: 'admin', permissions: [] });
         setShowAddForm(false);
-        setShowPermissions(false);
         fetchAdmins();
         setTimeout(() => setSuccess(''), 3000);
       } else {
@@ -318,7 +316,6 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
                     onClick={() => {
                       setShowAddForm(false);
                       setNewAdmin({ email: '', password: '', confirmPassword: '', role: 'admin', permissions: [] });
-                      setShowPermissions(false);
                       setError('');
                     }}
                     className="flex-1"

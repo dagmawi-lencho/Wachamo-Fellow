@@ -41,7 +41,12 @@ export async function POST(request: NextRequest) {
     console.log('✅ Login successful, generating token...');
     // Create JWT token
     const token = jwt.sign(
-      { id: admin._id, email: admin.email },
+      { 
+        id: admin._id, 
+        email: admin.email,
+        role: admin.role,
+        permissions: admin.permissions
+      },
       process.env.NEXTAUTH_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     );
@@ -51,7 +56,9 @@ export async function POST(request: NextRequest) {
       message: 'Login successful',
       admin: {
         id: admin._id,
-        email: admin.email
+        email: admin.email,
+        role: admin.role,
+        permissions: admin.permissions
       }
     });
     

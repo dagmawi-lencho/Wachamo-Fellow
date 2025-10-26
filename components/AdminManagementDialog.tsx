@@ -8,12 +8,17 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Shield, UserPlus, Trash2, AlertCircle, Check } from 'lucide-react';
+import { Shield, UserPlus, Trash2, AlertCircle, Check, Crown, Settings as SettingsIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { PERMISSION_GROUPS, Permission, Role } from '@/lib/permissions';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface Admin {
   _id: string;
   email: string;
+  role: Role;
+  permissions: Permission[];
   createdAt: string;
 }
 
@@ -31,8 +36,11 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
   const [newAdmin, setNewAdmin] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'admin' as Role,
+    permissions: [] as Permission[]
   });
+  const [showPermissions, setShowPermissions] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -84,7 +92,9 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: newAdmin.email,
-          password: newAdmin.password
+          password: newAdmin.password,
+          role: newAdmin.role,
+          permissions: newAdmin.permissions
         })
       });
 
@@ -92,8 +102,9 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
 
       if (response.ok) {
         setSuccess('Admin created successfully!');
-        setNewAdmin({ email: '', password: '', confirmPassword: '' });
+        setNewAdmin({ email: '', password: '', confirmPassword: '', role: 'admin', permissions: [] });
         setShowAddForm(false);
+        setShowPermissions(false);
         fetchAdmins();
         setTimeout(() => setSuccess(''), 3000);
       } else {
@@ -128,6 +139,26 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
     } catch {
       setError('An error occurred while deleting admin');
     }
+  };
+
+  const togglePermission = (permission: Permission) => {
+    setNewAdmin(prev => ({
+      ...prev,
+      permissions: prev.permissions.includes(permission)
+        ? prev.permissions.filter(p => p !== permission)
+        : [...prev.permissions, permission]
+    }));
+  };
+
+  const selectAllPermissions = () => {
+    const allPermissions = Object.values(PERMISSION_GROUPS).flatMap(group => 
+      group.map(p => p.id)
+    );
+    setNewAdmin(prev => ({ ...prev, permissions: allPermissions }));
+  };
+
+  const deselectAllPermissions = () => {
+    setNewAdmin(prev => ({ ...prev, permissions: [] }));
   };
 
   return (
@@ -212,13 +243,82 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
                   </div>
                 </div>
 
+                {/* Permission Management Section */}
+                <div className="border-2 border-primary/20 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-blue-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-bold flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-purple-600" />
+                      Permission Settings
+                    </Label>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={selectAllPermissions}
+                        className="text-xs"
+                      >
+                        Select All
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={deselectAllPermissions}
+                        className="text-xs"
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <Accordion type="single" collapsible className="w-full">
+                    {Object.entries(PERMISSION_GROUPS).map(([groupName, permissions]) => (
+                      <AccordionItem key={groupName} value={groupName}>
+                        <AccordionTrigger className="text-sm font-semibold">
+                          {groupName} ({permissions.filter(p => newAdmin.permissions.includes(p.id)).length}/{permissions.length})
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-3 pt-2">
+                            {permissions.map((permission) => (
+                              <div key={permission.id} className="flex items-start space-x-3 p-2 rounded hover:bg-white/50">
+                                <Checkbox
+                                  id={permission.id}
+                                  checked={newAdmin.permissions.includes(permission.id)}
+                                  onCheckedChange={() => togglePermission(permission.id)}
+                                />
+                                <div className="flex-1">
+                                  <label
+                                    htmlFor={permission.id}
+                                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                                  >
+                                    {permission.label}
+                                  </label>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {permission.description}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+
+                  <div className="mt-3 p-2 bg-blue-100 rounded text-xs text-blue-800">
+                    <strong>Note:</strong> Super Admins automatically have all permissions and can manage other admins.
+                  </div>
+                </div>
+
                 <div className="flex gap-3">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => {
                       setShowAddForm(false);
-                      setNewAdmin({ email: '', password: '', confirmPassword: '' });
+                      setNewAdmin({ email: '', password: '', confirmPassword: '', role: 'admin', permissions: [] });
+                      setShowPermissions(false);
                       setError('');
                     }}
                     className="flex-1"
@@ -250,15 +350,16 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
               <TableHeader>
                 <TableRow className="bg-primary/5">
                   <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Permissions</TableHead>
                   <TableHead>Created</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {admins.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                       No administrators found
                     </TableCell>
                   </TableRow>
@@ -266,9 +367,25 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
                   admins.map((admin) => (
                     <TableRow key={admin._id} className="hover:bg-primary/5">
                       <TableCell className="font-medium">{admin.email}</TableCell>
-                      <TableCell>{new Date(admin.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Badge className="gradient-primary text-white">Active</Badge>
+                        {admin.role === 'super_admin' ? (
+                          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white flex items-center gap-1 w-fit">
+                            <Crown className="w-3 h-3" />
+                            Super Admin
+                          </Badge>
+                        ) : (
+                          <Badge className="gradient-primary text-white">
+                            Admin
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">
+                          {admin.role === 'super_admin' ? 'All' : `${admin.permissions?.length || 0} granted`}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(admin.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
@@ -276,8 +393,14 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
                           variant="outline"
                           onClick={() => handleDeleteAdmin(admin._id, admin.email)}
                           className="hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
-                          disabled={admins.length <= 1}
-                          title={admins.length <= 1 ? 'Cannot delete the last admin' : 'Delete admin'}
+                          disabled={admins.length <= 1 || admin.role === 'super_admin'}
+                          title={
+                            admin.role === 'super_admin' 
+                              ? 'Cannot delete super admin' 
+                              : admins.length <= 1 
+                              ? 'Cannot delete the last admin' 
+                              : 'Delete admin'
+                          }
                         >
                           <Trash2 className="w-3 h-3" />
                         </Button>
@@ -299,8 +422,9 @@ export function AdminManagementDialog({ open, onOpenChange }: AdminManagementDia
 
         <div className="bg-blue-50/50 backdrop-blur-xl rounded-xl p-4 border border-primary/20">
           <p className="text-xs text-gray-600">
-            <strong className="text-primary">Security Note:</strong> All admins have full access to the dashboard. 
-            Only create admin accounts for trusted individuals. Passwords are encrypted using bcrypt.
+            <strong className="text-primary">Security Note:</strong> Admins have access based on granted permissions. 
+            Super Admins have all permissions and can manage other admins. Regular admins can only access features you grant them.
+            Passwords are encrypted using bcrypt.
           </p>
         </div>
       </DialogContent>

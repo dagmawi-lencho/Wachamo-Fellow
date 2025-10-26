@@ -49,6 +49,8 @@ import {
   Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import type { Member } from '@/types/member';
+import { usePermissions } from '@/contexts/PermissionContext';
+import { PERMISSIONS } from '@/lib/permissions';
 
 interface Stats {
   overview: {
@@ -81,6 +83,7 @@ const COLORS = ['#2ea7df', '#f59f45', '#10b981', '#f97316', '#8b5cf6', '#ec4899'
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { hasPermission, isSuperAdmin } = usePermissions();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -607,46 +610,56 @@ export default function AdminDashboard() {
             </div>
             
             <div className="flex items-center gap-2 flex-wrap">
-              <Button
-                onClick={() => router.push('/admin/products')}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
-                size="sm"
-              >
-                <ShoppingCart className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline font-semibold">Products</span>
-              </Button>
-              <Button
-                onClick={() => setShowPaymentDialog(true)}
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
-                size="sm"
-              >
-                <CreditCard className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline font-semibold">Payment</span>
-              </Button>
-              <Button
-                onClick={() => setShowAdminDialog(true)}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
-                size="sm"
-              >
-                <Shield className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline font-semibold">Admins</span>
-              </Button>
-              <Button
-                onClick={() => setShowSettingsDialog(true)}
-                className="bg-gradient-to-r from-[#2ea7df] to-blue-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
-                size="sm"
-              >
-                <Settings className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline font-semibold">Settings</span>
-              </Button>
-              <Button
-                onClick={() => setShowQuotesDialog(true)}
-                className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
-                size="sm"
-              >
-                <BookOpen className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline font-semibold">Quotes</span>
-              </Button>
+              {hasPermission(PERMISSIONS.MANAGE_PRODUCTS) && (
+                <Button
+                  onClick={() => router.push('/admin/products')}
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                  size="sm"
+                >
+                  <ShoppingCart className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline font-semibold">Products</span>
+                </Button>
+              )}
+              {hasPermission(PERMISSIONS.MANAGE_PAYMENT_SETTINGS) && (
+                <Button
+                  onClick={() => setShowPaymentDialog(true)}
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                  size="sm"
+                >
+                  <CreditCard className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline font-semibold">Payment</span>
+                </Button>
+              )}
+              {(isSuperAdmin() || hasPermission(PERMISSIONS.MANAGE_ADMINS)) && (
+                <Button
+                  onClick={() => setShowAdminDialog(true)}
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                  size="sm"
+                >
+                  <Shield className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline font-semibold">Admins</span>
+                </Button>
+              )}
+              {hasPermission(PERMISSIONS.MANAGE_REGISTRATION_SETTINGS) && (
+                <Button
+                  onClick={() => setShowSettingsDialog(true)}
+                  className="bg-gradient-to-r from-[#2ea7df] to-blue-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                  size="sm"
+                >
+                  <Settings className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline font-semibold">Settings</span>
+                </Button>
+              )}
+              {hasPermission(PERMISSIONS.MANAGE_BIBLE_QUOTES) && (
+                <Button
+                  onClick={() => setShowQuotesDialog(true)}
+                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                  size="sm"
+                >
+                  <BookOpen className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline font-semibold">Quotes</span>
+                </Button>
+              )}
               <Button
                 onClick={handleLogout}
                 className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-md hover:shadow-lg hover:scale-105 transition-all"
@@ -663,29 +676,40 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 lg:px-6 py-8">
         <Tabs defaultValue="overview" className="space-y-8">
           <TabsList className="bg-white/80 backdrop-blur-sm border border-gray-200 p-1.5 rounded-2xl shadow-lg grid w-full grid-cols-2 lg:grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="members" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              <span className="hidden sm:inline">Members</span>
-            </TabsTrigger>
-            <TabsTrigger value="transactions" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              <span className="hidden sm:inline">Transactions</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              <span className="hidden sm:inline">Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="banks" className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              <span className="hidden sm:inline">Banks</span>
-            </TabsTrigger>
+            {hasPermission(PERMISSIONS.VIEW_OVERVIEW) && (
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" />
+                <span className="hidden sm:inline">Overview</span>
+              </TabsTrigger>
+            )}
+            {hasPermission(PERMISSIONS.VIEW_MEMBERS) && (
+              <TabsTrigger value="members" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">Members</span>
+              </TabsTrigger>
+            )}
+            {hasPermission(PERMISSIONS.VIEW_TRANSACTIONS) && (
+              <TabsTrigger value="transactions" className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4" />
+                <span className="hidden sm:inline">Transactions</span>
+              </TabsTrigger>
+            )}
+            {hasPermission(PERMISSIONS.VIEW_ANALYTICS) && (
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <Activity className="w-4 h-4" />
+                <span className="hidden sm:inline">Analytics</span>
+              </TabsTrigger>
+            )}
+            {hasPermission(PERMISSIONS.VIEW_BANKS) && (
+              <TabsTrigger value="banks" className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4" />
+                <span className="hidden sm:inline">Banks</span>
+              </TabsTrigger>
+            )}
           </TabsList>
 
           {/* Overview Tab */}
+          {hasPermission(PERMISSIONS.VIEW_OVERVIEW) && (
           <TabsContent value="overview" className="space-y-8">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -923,8 +947,10 @@ export default function AdminDashboard() {
               </Card>
             </div>
           </TabsContent>
+          )}
 
           {/* Members Tab */}
+          {hasPermission(PERMISSIONS.VIEW_MEMBERS) && (
           <TabsContent value="members" className="space-y-6">
             <Card className="border-0 shadow-xl bg-white">
               <CardHeader>
@@ -1333,18 +1359,20 @@ export default function AdminDashboard() {
                           <TableCell>{member.fellowshipTeam}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => {
-                                  setMemberToEdit(member);
-                                  setShowEditDialog(true);
-                                }}
-                                className="hover:bg-primary/10 hover:border-primary"
-                                title="Edit Member"
-                              >
-                                <Edit className="w-3 h-3" />
-                              </Button>
+                              {hasPermission(PERMISSIONS.EDIT_MEMBERS) && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setMemberToEdit(member);
+                                    setShowEditDialog(true);
+                                  }}
+                                  className="hover:bg-primary/10 hover:border-primary"
+                                  title="Edit Member"
+                                >
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                              )}
                               <Button
                                 size="sm"
                                 variant="outline"
@@ -1357,17 +1385,20 @@ export default function AdminDashboard() {
                               >
                                 👁️
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="hover:bg-destructive/10 hover:text-destructive"
+                              {hasPermission(PERMISSIONS.DELETE_MEMBERS) && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="hover:bg-destructive/10 hover:text-destructive"
                                 onClick={() => {
                                   setMemberToDelete(member._id);
                                   setShowDeleteDialog(true);
                                 }}
+                                title="Delete Member"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </Button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -1449,8 +1480,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+          )}
 
           {/* Transactions Tab */}
+          {hasPermission(PERMISSIONS.VIEW_TRANSACTIONS) && (
           <TabsContent value="transactions" className="space-y-6">
             {/* Transaction Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1866,8 +1899,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+          )}
 
           {/* Analytics Tab */}
+          {hasPermission(PERMISSIONS.VIEW_ANALYTICS) && (
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Members by College Chart */}
@@ -1984,8 +2019,10 @@ export default function AdminDashboard() {
               </Card>
             </div>
           </TabsContent>
+          )}
 
           {/* Banks Tab */}
+          {hasPermission(PERMISSIONS.VIEW_BANKS) && (
           <TabsContent value="banks" className="space-y-6">
             <Card className="border-0 shadow-xl bg-white">
               <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
@@ -2060,6 +2097,7 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </TabsContent>
+          )}
         </Tabs>
       </div>
 

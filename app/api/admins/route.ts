@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     
-    const { email, password } = await request.json();
+    const { email, password, role, permissions } = await request.json();
     
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({ email });
@@ -41,10 +41,12 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Create admin
+    // Create admin with role and permissions
     const admin = await Admin.create({
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || 'admin',
+      permissions: permissions || []
     });
     
     return NextResponse.json({
@@ -53,6 +55,8 @@ export async function POST(request: NextRequest) {
       admin: {
         id: admin._id,
         email: admin.email,
+        role: admin.role,
+        permissions: admin.permissions,
         createdAt: admin.createdAt
       }
     }, { status: 201 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
+import { Role, Permission } from '@/lib/permissions';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,13 +16,15 @@ export async function GET(request: NextRequest) {
     const decoded = jwt.verify(
       token,
       process.env.NEXTAUTH_SECRET || 'your-secret-key'
-    ) as { id: string; email: string };
+    ) as { id: string; email: string; role: Role; permissions: Permission[] };
     
     return NextResponse.json({
       authenticated: true,
       admin: {
         id: decoded.id,
-        email: decoded.email
+        email: decoded.email,
+        role: decoded.role,
+        permissions: decoded.permissions
       }
     });
   } catch {

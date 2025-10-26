@@ -13,28 +13,25 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json();
     console.log('📧 Login attempt for email:', email);
     
-    // For initial setup, check if admin exists, if not create one
-    let admin = await Admin.findOne({ email });
+    // Find admin by email
+    const admin = await Admin.findOne({ email });
     
     if (!admin) {
-      console.log('👤 Admin not found, creating default admin...');
-      // Create default admin if none exists
-      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10);
-      admin = await Admin.create({
-        email: process.env.ADMIN_EMAIL || 'admin@wachamo.edu.et',
-        password: hashedPassword
-      });
-      console.log('✅ Default admin created');
-    } else {
-      console.log('👤 Admin found in database');
+      console.log('❌ Login failed: Admin not found');
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      );
     }
+    
+    console.log('👤 Admin found in database');
     
     // Verify password
     const isValidPassword = await bcrypt.compare(password, admin.password);
     console.log('🔑 Password valid:', isValidPassword);
     
-    if (admin.email !== email || !isValidPassword) {
-      console.log('❌ Login failed: Invalid credentials');
+    if (!isValidPassword) {
+      console.log('❌ Login failed: Invalid password');
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }

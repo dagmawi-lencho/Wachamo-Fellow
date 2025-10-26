@@ -162,13 +162,6 @@ function LoginForm() {
                 </Button>
               </div>
             </form>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-primary/20">
-              <p className="text-xs text-muted-foreground text-center">
-                🔒 Secure Admin Access Only<br />
-                Default credentials: admin@wachamo.edu.et / admin123
-              </p>
-            </div>
           </CardContent>
         </Card>
 

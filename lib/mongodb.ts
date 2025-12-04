@@ -22,7 +22,15 @@ if (!global.mongoose) {
 }
 
 async function connectDB() {
-  if (cached.conn) {
+  // Force reconnect if connection exists but is disconnected
+  if (cached.conn && mongoose.connection.readyState === 0) {
+    cached.conn = null;
+    cached.promise = null;
+  }
+
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    // Log connection info for debugging
+    console.log('📊 Using existing MongoDB connection:', mongoose.connection.host);
     return cached.conn;
   }
 
@@ -35,13 +43,20 @@ async function connectDB() {
       minPoolSize: 2,
     };
 
+    // Log the connection URI (without password) for debugging
+    const uriDisplay = MONGODB_URI.replace(/:[^:@]+@/, ':***@');
+    console.log('🔌 Connecting to MongoDB:', uriDisplay);
+
     cached.promise = mongoose.connect(MONGODB_URI, opts)
       .then((mongoose) => {
         console.log('✅ MongoDB Connected Successfully');
+        console.log('📊 Database:', mongoose.connection.db.databaseName);
+        console.log('📊 Host:', mongoose.connection.host);
         return mongoose;
       })
       .catch((error) => {
         console.error('❌ MongoDB Connection Error:', error.message);
+        cached.promise = null;
         throw error;
       });
   }

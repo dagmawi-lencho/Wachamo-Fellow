@@ -60,8 +60,15 @@ export default function ShopPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/products');
+      // Add cache-busting to ensure fresh data
+      const response = await fetch('/api/products', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+        }
+      });
       const data = await response.json();
+      console.log('📦 Products fetched from API:', data.products?.length || 0);
       setProducts(data.products || []);
     } catch (error) {
       console.error('Failed to fetch products:', error);

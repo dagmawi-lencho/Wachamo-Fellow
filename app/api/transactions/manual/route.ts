@@ -2,27 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
 import Product from '@/models/Product';
+import { requireAuth } from '@/lib/auth-middleware';
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify admin authentication
+    const authResult = await requireAuth(request);
+    if (authResult instanceof NextResponse) {
+      return authResult; // Returns error response if not authenticated
+    }
+    const admin = authResult;
+
     await connectDB();
     
     const data = await request.json();
     const { 
-      amount, email, firstName, lastName, phoneNumber, studentId, bankName, accountNumber, 
-      type, productId, productName, orderDetails, receiptUrl, 
-      paymentType, firstPaymentAmount, remainingAmount 
+      firstName, lastName, phoneNumber, studentId, amount, 
+      paymentType, firstPaymentAmount, remainingAmount,
+      type, productName, orderDetails, receiptUrl, isManualEntry 
     } = data;
     
     // Validate required fields
-    if (!amount || !firstName || !receiptUrl) {
+    if (!amount || !firstName || !phoneNumber) {
       return NextResponse.json({ 
-        error: 'Missing required fields: amount, full name, and receipt image' 
+        error: 'Missing required fields: amount, firstName, and phoneNumber' 
+      }, { status: 400 });
+    }
+
+    if (paymentType === 'partial' && (!firstPaymentAmount || firstPaymentAmount <= 0)) {
+      return NextResponse.json({ 
+        error: 'First payment amount is required for partial payments' 
       }, { status: 400 });
     }
     
     // Generate unique transaction reference
-    const txRef = `WCF-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const txRef = `WCF-MANUAL-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Generate unique order number: WCU + 7 random digits (10 digits total)
     const generateOrderNumber = () => {
@@ -77,28 +91,24 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    // Create transaction record (pending admin approval)
+    // Create transaction record (pending admin approval, same flow as online orders)
     const transaction = await Transaction.create({
       txRef,
       orderNumber,
       amount,
       currency: 'ETB',
-      email: email || undefined,
       firstName,
-      lastName: lastName || '',
-      phoneNumber: phoneNumber || '',
+      lastName: lastName || firstName,
+      phoneNumber,
       studentId: studentId || undefined,
-      bankName: bankName || undefined,
-      accountNumber: accountNumber || undefined,
       type,
-      productId,
       productName,
       orderDetails,
-      receiptUrl,
+      receiptUrl: receiptUrl || undefined,
       status: 'pending',
       expiresAt,
       stockReserved,
-      isManualEntry: false,
+      isManualEntry: isManualEntry || true,
       paymentType: paymentType || 'full',
       firstPaymentAmount: paymentType === 'partial' ? firstPaymentAmount : undefined,
       remainingAmount: paymentType === 'partial' ? remainingAmount : undefined,
@@ -107,14 +117,14 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: 'Order submitted successfully! Admin will verify your payment.',
+      message: 'Manual sale created successfully! Transaction is pending approval.',
       txRef,
       orderNumber,
       transactionId: transaction._id
     });
   } catch (error: unknown) {
-    console.error('Transaction creation error:', error);
-    const message = error instanceof Error ? error.message : 'Failed to create transaction';
+    console.error('Manual sale creation error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to create manual sale';
     return NextResponse.json({ 
       error: message
     }, { status: 500 });

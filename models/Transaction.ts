@@ -23,6 +23,14 @@ export interface ITransaction extends Document {
   approvedAt?: Date;
   expiresAt?: Date;
   stockReserved: boolean;
+  // Partial payment fields
+  isManualEntry: boolean;
+  paymentType: 'full' | 'partial';
+  firstPaymentAmount?: number;
+  remainingAmount?: number;
+  remainingPaid: boolean;
+  remainingPaidAt?: Date;
+  remainingReceiptUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +58,14 @@ const TransactionSchema: Schema = new Schema({
   approvedAt: { type: Date },
   expiresAt: { type: Date },
   stockReserved: { type: Boolean, default: false },
+  // Partial payment fields
+  isManualEntry: { type: Boolean, default: false },
+  paymentType: { type: String, enum: ['full', 'partial'], default: 'full' },
+  firstPaymentAmount: { type: Number },
+  remainingAmount: { type: Number },
+  remainingPaid: { type: Boolean, default: false },
+  remainingPaidAt: { type: Date },
+  remainingReceiptUrl: { type: String },
 }, {
   timestamps: true
 });

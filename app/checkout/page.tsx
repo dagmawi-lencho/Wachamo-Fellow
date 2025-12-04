@@ -11,6 +11,7 @@ import { ShoppingCart, CreditCard, User, ArrowLeft, Building2, Copy, CheckCircle
 import Image from 'next/image';
 import { cartStore, CartItem } from '@/lib/cartStore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Bank {
   _id: string;
@@ -30,6 +31,8 @@ export default function CheckoutPage() {
     phoneNumber: '',
     studentId: ''
   });
+  const [paymentType, setPaymentType] = useState<'full' | 'partial'>('full');
+  const [firstPaymentAmount, setFirstPaymentAmount] = useState<number>(0);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string>('');
   const [copied, setCopied] = useState(false);
@@ -60,6 +63,12 @@ export default function CheckoutPage() {
   }, [router]);
 
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const remainingAmount = paymentType === 'partial' && firstPaymentAmount > 0
+    ? Math.max(0, total - firstPaymentAmount)
+    : 0;
+  const donationAmount = paymentType === 'partial' && firstPaymentAmount > total
+    ? firstPaymentAmount - total
+    : 0;
 
   const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,6 +88,17 @@ export default function CheckoutPage() {
     if (!receiptFile) {
       alert('Please upload your payment receipt');
       return;
+    }
+
+    if (paymentType === 'partial') {
+      if (firstPaymentAmount <= 0) {
+        alert('Please enter a valid first payment amount');
+        return;
+      }
+      if (firstPaymentAmount >= total) {
+        alert('For partial payment, first payment must be less than total amount. If paying full amount, please select "Full Payment" instead.');
+        return;
+      }
     }
 
     setProcessing(true);
@@ -117,7 +137,10 @@ export default function CheckoutPage() {
           productName: `Order (${cart.length} items)`,
           productId: cart.map(item => item.productId).join(','),
           orderDetails: cart,
-          receiptUrl: uploadData.url // Include the uploaded receipt URL
+          receiptUrl: uploadData.url,
+          paymentType: paymentType,
+          firstPaymentAmount: paymentType === 'partial' ? firstPaymentAmount : undefined,
+          remainingAmount: paymentType === 'partial' ? (donationAmount > 0 ? 0 : remainingAmount) : undefined,
         })
       });
 
@@ -268,6 +291,96 @@ export default function CheckoutPage() {
                     )}
                   </div>
 
+                  {/* Payment Type Selection */}
+                  <div className="grid gap-3">
+                    <Label className="text-base font-bold">Payment Type *</Label>
+                    <div className="flex gap-6">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="full"
+                          checked={paymentType === 'full'}
+                          onCheckedChange={() => {
+                            setPaymentType('full');
+                            setFirstPaymentAmount(0);
+                          }}
+                        />
+                        <Label htmlFor="full" className="cursor-pointer font-normal">Full Payment</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="partial"
+                          checked={paymentType === 'partial'}
+                          onCheckedChange={() => {
+                            setPaymentType('partial');
+                            setFirstPaymentAmount(0);
+                          }}
+                        />
+                        <Label htmlFor="partial" className="cursor-pointer font-normal">Partial Payment</Label>
+                      </div>
+                    </div>
+
+                    {paymentType === 'partial' && (
+                      <div className="mt-2 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border-2 border-orange-200">
+                        <div className="grid gap-2">
+                          <Label htmlFor="firstPaymentAmount" className="text-sm font-semibold">
+                            First Payment Amount (ETB) *
+                          </Label>
+                          <Input
+                            id="firstPaymentAmount"
+                            type="number"
+                            min={0}
+                            max={total - 0.01}
+                            step="0.01"
+                            value={firstPaymentAmount || ''}
+                            onChange={(e) => {
+                              const value = Number(e.target.value);
+                              if (value >= total) {
+                                setFirstPaymentAmount(total - 0.01);
+                              } else {
+                                setFirstPaymentAmount(value);
+                              }
+                            }}
+                            placeholder="Enter first payment amount"
+                            className="h-12"
+                          />
+                          {firstPaymentAmount > 0 && (
+                            <div className="mt-2 space-y-1 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Total Amount:</span>
+                                <span className="font-bold">{total} ETB</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">First Payment:</span>
+                                <span className="font-bold text-green-600">{firstPaymentAmount} ETB</span>
+                              </div>
+                              {donationAmount > 0 ? (
+                                <div className="flex justify-between border-t pt-1">
+                                  <span className="text-gray-700 font-semibold">Remaining:</span>
+                                  <span className="font-bold text-green-600">0 ETB</span>
+                                </div>
+                              ) : (
+                                <div className="flex justify-between border-t pt-1">
+                                  <span className="text-gray-700 font-semibold">Remaining:</span>
+                                  <span className="font-bold text-orange-600">{remainingAmount} ETB</span>
+                                </div>
+                              )}
+                              {donationAmount > 0 && (
+                                <div className="mt-2 p-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                                  <p className="text-xs text-green-700 font-semibold">
+                                    💝 Thank you! The extra {donationAmount} ETB will be treated as a donation to the fellowship.
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          <p className="text-xs text-gray-600 mt-2">
+                            💡 You can pay the remaining amount later. Admin will track both payments.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="grid gap-3">
                     <Label htmlFor="receipt" className="text-base font-bold">Payment Receipt * 📸</Label>
                     <div className="space-y-3">
@@ -306,7 +419,11 @@ export default function CheckoutPage() {
                       ) : (
                         <>
                           <CreditCard className="w-5 h-5 mr-2" />
-                          Submit Order - {total} ETB
+                          {paymentType === 'partial' && firstPaymentAmount > 0
+                            ? donationAmount > 0
+                              ? `Submit Order - ${firstPaymentAmount} ETB (${donationAmount} ETB donation)`
+                              : `Submit Order - ${firstPaymentAmount} ETB (${remainingAmount} ETB remaining)`
+                            : `Submit Order - ${total} ETB`}
                         </>
                       )}
                     </Button>

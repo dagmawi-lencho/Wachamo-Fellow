@@ -39,6 +39,37 @@ export async function PUT(
     if (!existingTransaction) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
+
+    // Handle remaining payment recording
+    if (data.remainingReceiptUrl) {
+      if (existingTransaction.paymentType !== 'partial') {
+        return NextResponse.json({ 
+          error: 'This transaction is not a partial payment' 
+        }, { status: 400 });
+      }
+
+      if (existingTransaction.remainingPaid) {
+        return NextResponse.json({ 
+          error: 'Remaining payment has already been recorded' 
+        }, { status: 400 });
+      }
+
+      const transaction = await Transaction.findByIdAndUpdate(
+        id,
+        {
+          remainingPaid: true,
+          remainingPaidAt: new Date(),
+          remainingReceiptUrl: data.remainingReceiptUrl
+        },
+        { new: true }
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: 'Remaining payment recorded successfully',
+        transaction
+      });
+    }
     
     // Prepare update data based on status
     const updateData: {

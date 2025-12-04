@@ -39,6 +39,7 @@ import { AdminManagementDialog } from '@/components/AdminManagementDialog';
 import { PaymentSettingsDialog } from '@/components/PaymentSettingsDialog';
 import { BankManagementDialog } from '@/components/BankManagementDialog';
 import { BibleQuoteDialog } from '@/components/BibleQuoteDialog';
+import ManualSaleDialog from '@/components/ManualSaleDialog';
 import { Label } from '@/components/ui/label';
 import { colleges } from '@/lib/academicData';
 import { fellowshipTeams } from '@/lib/fellowshipTeams';
@@ -102,6 +103,12 @@ export default function AdminDashboard() {
     txRef: string;
     receiptUrl?: string;
     createdAt: string;
+    isManualEntry?: boolean;
+    paymentType?: 'full' | 'partial';
+    firstPaymentAmount?: number;
+    remainingAmount?: number;
+    remainingPaid?: boolean;
+    remainingReceiptUrl?: string;
   }>>([]);
   const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
   const [transactionStats, setTransactionStats] = useState<{
@@ -129,6 +136,12 @@ export default function AdminDashboard() {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showBankDialog, setShowBankDialog] = useState(false);
   const [showQuotesDialog, setShowQuotesDialog] = useState(false);
+  const [showManualSaleDialog, setShowManualSaleDialog] = useState(false);
+  const [transactionFilter, setTransactionFilter] = useState<'all' | 'online' | 'manual'>('all');
+  const [showRemainingPaymentDialog, setShowRemainingPaymentDialog] = useState(false);
+  const [selectedTransactionForRemaining, setSelectedTransactionForRemaining] = useState<string | null>(null);
+  const [remainingReceiptFile, setRemainingReceiptFile] = useState<File | null>(null);
+  const [remainingReceiptPreview, setRemainingReceiptPreview] = useState<string>('');
   const [bankToEdit, setBankToEdit] = useState<{
     _id?: string;
     bankName: string;
@@ -284,6 +297,53 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Failed to update transaction:', error);
+      alert('An error occurred');
+    }
+  };
+
+  const handleRecordRemainingPayment = async () => {
+    if (!selectedTransactionForRemaining || !remainingReceiptFile) {
+      alert('Please select a transaction and upload a receipt');
+      return;
+    }
+
+    try {
+      // Upload receipt
+      const uploadForm = new FormData();
+      uploadForm.append('receipt', remainingReceiptFile);
+
+      const uploadRes = await fetch('/api/upload-receipt', {
+        method: 'POST',
+        body: uploadForm
+      });
+
+      const uploadData = await uploadRes.json();
+
+      if (!uploadData.success || !uploadData.url) {
+        alert('Failed to upload receipt. Please try again.');
+        return;
+      }
+
+      // Record remaining payment
+      const res = await fetch(`/api/transactions/${selectedTransactionForRemaining}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ remainingReceiptUrl: uploadData.url })
+      });
+
+      if (res.ok) {
+        fetchTransactions();
+        setShowRemainingPaymentDialog(false);
+        setSelectedTransactionForRemaining(null);
+        setRemainingReceiptFile(null);
+        setRemainingReceiptPreview('');
+        alert('Remaining payment recorded successfully');
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Failed to record remaining payment');
+      }
+    } catch (error) {
+      console.error('Failed to record remaining payment:', error);
       alert('An error occurred');
     }
   };
@@ -500,11 +560,19 @@ export default function AdminDashboard() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedMembers = filteredMembers.slice(startIndex, endIndex);
 
+  // Filter transactions by type (online vs manual)
+  const filteredTransactions = transactions.filter(tx => {
+    if (transactionFilter === 'all') return true;
+    if (transactionFilter === 'manual') return tx.isManualEntry === true;
+    if (transactionFilter === 'online') return tx.isManualEntry !== true;
+    return true;
+  });
+
   // Pagination for Transactions
-  const totalTransactionPages = Math.ceil(transactions.length / transactionsPerPage);
+  const totalTransactionPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   const transactionStartIndex = (transactionPage - 1) * transactionsPerPage;
   const transactionEndIndex = transactionStartIndex + transactionsPerPage;
-  const paginatedTransactions = transactions.slice(transactionStartIndex, transactionEndIndex);
+  const paginatedTransactions = filteredTransactions.slice(transactionStartIndex, transactionEndIndex);
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -1577,10 +1645,30 @@ export default function AdminDashboard() {
                   <div>
                     <CardTitle>Transaction History</CardTitle>
                     <CardDescription>
-                      All payments and donations • Showing {transactionStartIndex + 1}-{Math.min(transactionEndIndex, transactions.length)} of {transactions.length}
+                      All payments and donations • Showing {transactionStartIndex + 1}-{Math.min(transactionEndIndex, filteredTransactions.length)} of {filteredTransactions.length}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-3">
+                    <Select value={transactionFilter} onValueChange={(val: 'all' | 'online' | 'manual') => {
+                      setTransactionFilter(val);
+                      setTransactionPage(1);
+                    }}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Orders</SelectItem>
+                        <SelectItem value="online">Online</SelectItem>
+                        <SelectItem value="manual">Manual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      onClick={() => setShowManualSaleDialog(true)}
+                      className="gradient-primary text-white"
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add Manual Sale
+                    </Button>
                     {selectedTransactions.length > 0 && (
                       <Button
                         variant="destructive"
@@ -1662,18 +1750,20 @@ export default function AdminDashboard() {
                         <TableHead className="w-12">No.</TableHead>
                         <TableHead className="min-w-[100px]">Order #</TableHead>
                         <TableHead className="min-w-[80px]">Type</TableHead>
+                        <TableHead className="min-w-[100px]">Entry</TableHead>
                         <TableHead className="min-w-[150px]">Customer</TableHead>
                         <TableHead className="min-w-[120px]">Product</TableHead>
                         <TableHead className="min-w-[80px]">Amount</TableHead>
+                        <TableHead className="min-w-[100px]">Payment</TableHead>
                         <TableHead className="min-w-[100px]">Receipt</TableHead>
                         <TableHead className="min-w-[80px]">Status</TableHead>
-                        <TableHead className="min-w-[180px]">Actions</TableHead>
+                        <TableHead className="min-w-[200px]">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {transactions.length === 0 ? (
+                      {filteredTransactions.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={12} className="text-center py-8 text-muted-foreground">
                             No transactions yet
                           </TableCell>
                         </TableRow>
@@ -1700,13 +1790,43 @@ export default function AdminDashboard() {
                               </Badge>
                             </TableCell>
                             <TableCell>
+                              <Badge variant="outline" className={tx.isManualEntry ? 'border-orange-500 text-orange-600' : 'border-blue-500 text-blue-600'}>
+                                {tx.isManualEntry ? 'Manual' : 'Online'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
                               <div>
                                 <p className="font-medium">{tx.firstName} {tx.lastName}</p>
-                                <p className="text-xs text-gray-600">{tx.email}</p>
+                                <p className="text-xs text-gray-600">{tx.email || tx.phoneNumber}</p>
                               </div>
                             </TableCell>
                             <TableCell className="max-w-[200px] truncate">{tx.productName || '-'}</TableCell>
                             <TableCell className="font-bold text-primary">{tx.amount} ETB</TableCell>
+                            <TableCell>
+                              {tx.paymentType === 'partial' ? (
+                                <div className="text-xs">
+                                  <p className="font-semibold text-orange-600">Partial</p>
+                                  <p className="text-gray-600">First: {tx.firstPaymentAmount || 0} ETB</p>
+                                  {tx.firstPaymentAmount && tx.firstPaymentAmount > tx.amount ? (
+                                    <>
+                                      <p className="text-gray-600">Remaining: <span className="font-bold text-green-600">0 ETB</span></p>
+                                      <div className="mt-1 p-1 bg-green-50 rounded text-green-700 text-[10px]">
+                                        💝 {(tx.firstPaymentAmount - tx.amount).toFixed(0)} ETB donation
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <p className="text-gray-600">Remaining: {tx.remainingAmount || 0} ETB</p>
+                                      <Badge variant={tx.remainingPaid ? 'default' : 'secondary'} className={tx.remainingPaid ? 'bg-green-600' : 'bg-orange-500 mt-1'}>
+                                        {tx.remainingPaid ? 'Paid' : 'Pending'}
+                                      </Badge>
+                                    </>
+                                  )}
+                                </div>
+                              ) : (
+                                <Badge className="bg-green-600">Full</Badge>
+                              )}
+                            </TableCell>
                             <TableCell>
                               {tx.receiptUrl ? (
                                 <Button 
@@ -1735,58 +1855,73 @@ export default function AdminDashboard() {
                                 {tx.status}
                               </Badge>
                             </TableCell>
-                            <TableCell className="min-w-[180px]">
-                              {tx.status === 'pending' ? (
-                                <div className="flex gap-2 flex-nowrap">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleTransactionAction(tx._id, 'approved')}
-                                    className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-3 whitespace-nowrap"
-                                  >
-                                    ✓ Approve
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={() => {
-                                      const reason = prompt('Rejection reason (optional):');
-                                      handleTransactionAction(tx._id, 'rejected', reason || undefined);
-                                    }}
-                                    className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
-                                  >
-                                    ✗ Reject
-                                  </Button>
-                                </div>
-                              ) : tx.status === 'approved' ? (
-                                <div className="flex gap-2 flex-nowrap">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      if (confirm('Are you sure you want to reject this approved transaction?')) {
-                                        const reason = prompt('Rejection reason:');
-                                        if (reason) {
-                                          handleTransactionAction(tx._id, 'rejected', reason);
+                            <TableCell className="min-w-[200px]">
+                              <div className="flex flex-col gap-2">
+                                {tx.status === 'pending' ? (
+                                  <div className="flex gap-2 flex-nowrap">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleTransactionAction(tx._id, 'approved')}
+                                      className="bg-green-600 hover:bg-green-700 text-white text-xs h-8 px-3 whitespace-nowrap"
+                                    >
+                                      ✓ Approve
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => {
+                                        const reason = prompt('Rejection reason (optional):');
+                                        handleTransactionAction(tx._id, 'rejected', reason || undefined);
+                                      }}
+                                      className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
+                                    >
+                                      ✗ Reject
+                                    </Button>
+                                  </div>
+                                ) : tx.status === 'approved' ? (
+                                  <div className="flex gap-2 flex-nowrap">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        if (confirm('Are you sure you want to reject this approved transaction?')) {
+                                          const reason = prompt('Rejection reason:');
+                                          if (reason) {
+                                            handleTransactionAction(tx._id, 'rejected', reason);
+                                          }
                                         }
-                                      }
-                                    }}
-                                    className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
-                                  >
-                                    ✗ Reject
-                                  </Button>
+                                      }}
+                                      className="bg-red-600 hover:bg-red-700 text-white text-xs h-8 px-3 whitespace-nowrap"
+                                    >
+                                      ✗ Reject
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        if (confirm('Revert this transaction back to pending status?')) {
+                                          handleTransactionAction(tx._id, 'pending');
+                                        }
+                                      }}
+                                      className="border-orange-500 text-orange-600 hover:bg-orange-50 text-xs h-8 px-3 whitespace-nowrap"
+                                    >
+                                      ↺ Undo
+                                    </Button>
+                                  </div>
+                                ) : null}
+                                {/* Record Remaining Payment Button for Partial Payments */}
+                                {tx.paymentType === 'partial' && !tx.remainingPaid && tx.status === 'approved' && (
                                   <Button
                                     size="sm"
-                                    variant="outline"
                                     onClick={() => {
-                                      if (confirm('Revert this transaction back to pending status?')) {
-                                        handleTransactionAction(tx._id, 'pending');
-                                      }
+                                      setSelectedTransactionForRemaining(tx._id);
+                                      setShowRemainingPaymentDialog(true);
                                     }}
-                                    className="border-orange-500 text-orange-600 hover:bg-orange-50 text-xs h-8 px-3 whitespace-nowrap"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8 px-3 whitespace-nowrap w-full"
                                   >
-                                    ↺ Undo
+                                    💰 Record Remaining Payment
                                   </Button>
-                                </div>
-                              ) : tx.status === 'rejected' || tx.status === 'expired' ? (
+                                )}
+                              {tx.status === 'rejected' || tx.status === 'expired' ? (
                                 <div className="flex gap-2 flex-nowrap">
                                   <Button
                                     size="sm"
@@ -1818,6 +1953,20 @@ export default function AdminDashboard() {
                               ) : (
                                 <span className="text-xs text-gray-500">—</span>
                               )}
+                                {/* Record Remaining Payment Button for Partial Payments */}
+                                {tx.paymentType === 'partial' && !tx.remainingPaid && tx.status === 'approved' && (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedTransactionForRemaining(tx._id);
+                                      setShowRemainingPaymentDialog(true);
+                                    }}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8 px-3 whitespace-nowrap w-full mt-2"
+                                  >
+                                    💰 Record Remaining Payment
+                                  </Button>
+                                )}
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
@@ -1829,7 +1978,7 @@ export default function AdminDashboard() {
                 {/* Pagination Controls - Bottom */}
                 <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
                   <p className="text-sm text-muted-foreground">
-                    Showing {transactionStartIndex + 1} to {Math.min(transactionEndIndex, transactions.length)} of {transactions.length} entries
+                    Showing {transactionStartIndex + 1} to {Math.min(transactionEndIndex, filteredTransactions.length)} of {filteredTransactions.length} entries
                   </p>
                   
                   <div className="flex items-center gap-2">
@@ -2303,6 +2452,70 @@ export default function AdminDashboard() {
               </Button>
               <Button className="gradient-primary text-white" onClick={handleSaveRegistrationSettings}>
                 Save Settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Manual Sale Dialog */}
+      <ManualSaleDialog
+        open={showManualSaleDialog}
+        onOpenChange={setShowManualSaleDialog}
+        onSaved={() => {
+          fetchTransactions();
+          fetchStats();
+        }}
+      />
+
+      {/* Record Remaining Payment Dialog */}
+      <Dialog open={showRemainingPaymentDialog} onOpenChange={setShowRemainingPaymentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Record Remaining Payment</DialogTitle>
+            <DialogDescription>
+              Upload receipt for the remaining payment amount
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="remainingReceipt">Receipt Image *</Label>
+              <Input
+                id="remainingReceipt"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setRemainingReceiptFile(file);
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setRemainingReceiptPreview(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              {remainingReceiptPreview && (
+                <div className="mt-2">
+                  <img src={remainingReceiptPreview} alt="Receipt preview" className="max-w-xs rounded border" />
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 justify-end pt-4">
+              <Button variant="outline" onClick={() => {
+                setShowRemainingPaymentDialog(false);
+                setRemainingReceiptFile(null);
+                setRemainingReceiptPreview('');
+              }}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleRecordRemainingPayment}
+                disabled={!remainingReceiptFile}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Record Payment
               </Button>
             </div>
           </div>

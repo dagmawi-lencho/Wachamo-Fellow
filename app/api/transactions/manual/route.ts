@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (authResult instanceof NextResponse) {
       return authResult; // Returns error response if not authenticated
     }
-    const admin = authResult;
+    // Admin is authenticated (authResult is AuthenticatedAdmin)
 
     await connectDB();
     

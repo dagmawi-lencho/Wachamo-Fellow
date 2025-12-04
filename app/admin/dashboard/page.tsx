@@ -2497,8 +2497,8 @@ export default function AdminDashboard() {
                 }}
               />
               {remainingReceiptPreview && (
-                <div className="mt-2">
-                  <img src={remainingReceiptPreview} alt="Receipt preview" className="max-w-xs rounded border" />
+                <div className="mt-2 relative w-full max-w-xs h-48 rounded border overflow-hidden">
+                  <Image src={remainingReceiptPreview} alt="Receipt preview" fill className="object-contain" />
                 </div>
               )}
             </div>

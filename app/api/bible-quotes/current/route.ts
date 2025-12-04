@@ -37,7 +37,7 @@ export async function GET() {
         reference: currentQuote.reference
       }
     });
-  } catch (error: unknown) {
+  } catch {
     // Return default quote on error
     return NextResponse.json({
       success: true,

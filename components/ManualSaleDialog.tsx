@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, Plus, Minus, X, Upload } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 
 type Product = {
@@ -410,8 +410,8 @@ export default function ManualSaleDialog({ open, onOpenChange, onSaved }: Props)
                 onChange={handleReceiptChange}
               />
               {form.receiptPreview && (
-                <div className="mt-2">
-                  <img src={form.receiptPreview} alt="Receipt preview" className="max-w-xs rounded border" />
+                <div className="mt-2 relative w-full max-w-xs h-48 rounded border overflow-hidden">
+                  <Image src={form.receiptPreview} alt="Receipt preview" fill className="object-contain" />
                 </div>
               )}
             </div>
